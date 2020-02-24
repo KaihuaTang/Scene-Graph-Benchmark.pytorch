@@ -1,0 +1,104 @@
+MODEL:
+  META_ARCHITECTURE: "GeneralizedRCNN"
+  WEIGHT: "catalog://ImageNetPretrained/MSRA/R-101"
+  BACKBONE:
+    CONV_BODY: "R-101-FPN" # VGG-16
+  RESNETS:
+    BACKBONE_OUT_CHANNELS: 512
+  RELATION_ON: True
+  ATTRIBUTE_ON: False
+  FLIP_AUG: False            # if there is any left-right relation, FLIP AUG should be false
+  RPN:
+    USE_FPN: False
+    ANCHOR_SIZES: (32, 64, 128, 256, 512)
+    ANCHOR_STRIDE: (16, )
+    ASPECT_RATIOS: (0.23232838, 0.63365731, 1.28478321, 3.15089189)   # from neural-motifs
+    PRE_NMS_TOP_N_TRAIN: 6000
+    PRE_NMS_TOP_N_TEST: 6000
+    POST_NMS_TOP_N_TRAIN: 1000
+    POST_NMS_TOP_N_TEST: 1000
+    FPN_POST_NMS_TOP_N_TRAIN: 1000
+    FPN_POST_NMS_TOP_N_TEST: 1000
+    FPN_POST_NMS_PER_BATCH: False
+    RPN_MID_CHANNEL: 512
+  ROI_HEADS:
+    USE_FPN: True
+    POSITIVE_FRACTION: 0.5
+    BG_IOU_THRESHOLD: 0.3
+    BATCH_SIZE_PER_IMAGE: 256
+    DETECTIONS_PER_IMG: 64
+    NMS_FILTER_DUPLICATES: True
+  ROI_BOX_HEAD:
+    POOLER_RESOLUTION: 7
+    POOLER_SCALES: (0.0625, )
+    POOLER_SAMPLING_RATIO: 2
+    FEATURE_EXTRACTOR: "FPN2MLPFeatureExtractor"
+    PREDICTOR: "FPNPredictor"
+    NUM_CLASSES: 151                # 151 for VG, 1201 for GQA
+    MLP_HEAD_DIM: 2048
+  ROI_ATTRIBUTE_HEAD:
+    FEATURE_EXTRACTOR: "FPN2MLPFeatureExtractor"
+    PREDICTOR: "FPNPredictor"
+    USE_BINARY_LOSS: True           # choose binary, because cross_entropy loss deteriorate the box head, even with 0.1 weight
+    POS_WEIGHT: 50.0
+    ATTRIBUTE_LOSS_WEIGHT: 1.0
+    NUM_ATTRIBUTES: 201             # 201 for VG, 501 for GQA
+    MAX_ATTRIBUTES: 10             
+    ATTRIBUTE_BGFG_SAMPLE: True    
+    ATTRIBUTE_BGFG_RATIO: 3        
+  ROI_RELATION_HEAD:
+    USE_GT_BOX: True
+    USE_GT_OBJECT_LABEL: True
+    NUM_CLASSES: 51                 # 51 for VG, 201 for GQA (not contain "to the left of" & "to the right of")
+    BATCH_SIZE_PER_IMAGE: 64
+    POSITIVE_FRACTION: 0.25
+    CONTEXT_POOLING_DIM: 4096
+    CONTEXT_HIDDEN_DIM: 512
+    POOLING_ALL_LEVELS: True
+    FEATURE_EXTRACTOR: "RelationFeatureExtractor"
+    #PREDICTOR: "MotifPredictor"
+    PREDICTOR: "VCTreePredictor"
+    #PREDICTOR: "CausalAnalysisPredictor"
+    #PREDICTOR: "TransformerPredictor"
+    CONTEXT_OBJ_LAYER: 1
+    CONTEXT_REL_LAYER: 1
+    # Parameter for Transformer Module
+    TRANSFORMER:
+      DROPOUT_RATE: 0.1
+      OBJ_LAYER: 4
+      REL_LAYER: 2
+      NUM_HEAD: 8
+      KEY_DIM: 64
+      VAL_DIM: 64
+      INNER_DIM: 2048 
+DATASETS:
+  TRAIN: ("VG_stanford_filtered_with_attribute_train",)
+  VAL: ("VG_stanford_filtered_with_attribute_val",)
+  TEST: ("VG_stanford_filtered_with_attribute_test",)
+DATALOADER:
+  SIZE_DIVISIBILITY: 32
+SOLVER:
+  BIAS_LR_FACTOR: 1
+  BASE_LR: 0.01
+  WARMUP_FACTOR: 0.1
+  WEIGHT_DECAY: 0.0001
+  MOMENTUM: 0.9
+  GRAD_NORM_CLIP: 5.0
+  STEPS: (90000, 120000)
+  MAX_ITER: 180000
+  VAL_PERIOD: 1000
+  CHECKPOINT_PERIOD: 2000
+  PRINT_GRAD_FREQ: 5000
+  SCHEDULE:
+    # the following paramters are only used for WarmupReduceLROnPlateau
+    TYPE: "WarmupReduceLROnPlateau"    # WarmupMultiStepLR, WarmupReduceLROnPlateau
+    PATIENCE: 2
+    THRESHOLD: 0.001
+    COOLDOWN: 0
+    FACTOR: 0.5
+    MAX_DECAY_STEP: 5
+OUTPUT_DIR: './output/relation_baseline'
+TEST:
+  RELATION:
+    REQUIRE_OVERLAP: True
+    LATER_NMS_PREDICTION_THRES: 0.5

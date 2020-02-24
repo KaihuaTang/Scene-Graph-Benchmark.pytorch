@@ -1,0 +1,68 @@
+INPUT:
+  MIN_SIZE_TRAIN: (600,)
+  MAX_SIZE_TRAIN: 1000
+  MIN_SIZE_TEST: 600
+  MAX_SIZE_TEST: 1000
+MODEL:
+  META_ARCHITECTURE: "GeneralizedRCNN"
+  BACKBONE:
+    CONV_BODY: "VGG-16"
+  RESNETS:
+    BACKBONE_OUT_CHANNELS: 512
+  RELATION_ON: False
+  ATTRIBUTE_ON: False
+  FLIP_AUG: False
+  RPN:
+    USE_FPN: False
+    ANCHOR_SIZES: (32, 64, 128, 256, 512)
+    ANCHOR_STRIDE: (16,)
+    ASPECT_RATIOS: (0.23232838, 0.63365731, 1.28478321, 3.15089189)   # from neural-motifs
+    PRE_NMS_TOP_N_TRAIN: 12000
+    PRE_NMS_TOP_N_TEST: 6000
+    POST_NMS_TOP_N_TRAIN: 2000
+    POST_NMS_TOP_N_TEST: 1000
+    FPN_POST_NMS_TOP_N_TRAIN: 2000
+    FPN_POST_NMS_TOP_N_TEST: 2000
+    FPN_POST_NMS_PER_BATCH: False
+    RPN_MID_CHANNEL: 512
+  ROI_HEADS:
+    USE_FPN: True
+    POSITIVE_FRACTION: 0.5
+    BG_IOU_THRESHOLD: 0.3
+    BATCH_SIZE_PER_IMAGE: 256
+    DETECTIONS_PER_IMG: 256
+  ROI_BOX_HEAD:
+    POOLER_RESOLUTION: 7
+    POOLER_SCALES: (0.0625,)
+    POOLER_SAMPLING_RATIO: 2
+    FEATURE_EXTRACTOR: "FPN2MLPFeatureExtractor"
+    PREDICTOR: "FPNPredictor"
+    NUM_CLASSES: 151                    # 151 for VG, 1201 for GQA
+    MLP_HEAD_DIM: 2048
+  ROI_ATTRIBUTE_HEAD:
+    FEATURE_EXTRACTOR: "FPN2MLPFeatureExtractor"
+    PREDICTOR: "FPNPredictor"
+    USE_BINARY_LOSS: True               # choose binary, because cross_entropy loss deteriorate the box head, even with 0.1 weight
+    POS_WEIGHT: 50.0
+    ATTRIBUTE_LOSS_WEIGHT: 1.0
+    NUM_ATTRIBUTES: 201                 # 201 for VG, 501 for GQA
+    MAX_ATTRIBUTES: 10             
+    ATTRIBUTE_BGFG_SAMPLE: True    
+    ATTRIBUTE_BGFG_RATIO: 3        
+DATASETS:
+  TRAIN: ("VG_stanford_filtered_with_attribute_train",)
+  VAL: ("VG_stanford_filtered_with_attribute_val",)
+  TEST: ("VG_stanford_filtered_with_attribute_test",)
+DATALOADER:
+  SIZE_DIVISIBILITY: 32
+SOLVER:
+  BASE_LR: 0.001
+  WEIGHT_DECAY: 0.0001
+  WARMUP_FACTOR: 0.1
+  MOMENTUM: 0.9
+  GRAD_NORM_CLIP: 5.0
+  STEPS: (30000, 45000)
+  MAX_ITER: 90000
+  PRINT_GRAD_FREQ: 5000
+OUTPUT_DIR: './output/relation_baseline'
+
