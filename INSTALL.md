@@ -12,7 +12,7 @@ Most of the requirements of this projects are exactly the same as [maskrcnn-benc
 - OpenCV
 
 
-### Option 1: Step-by-step installation
+### Step-by-step installation
 
 ```bash
 # first, make sure that your conda is setup properly with the right environment
