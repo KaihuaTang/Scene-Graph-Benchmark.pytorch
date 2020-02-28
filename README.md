@@ -24,12 +24,12 @@ Note that all results of VCTree should be better than what we reported in [Unbia
 
 ## Contents
 
-1. [Install the requirements](INSTALL.md)
-2. [Prepare the VisualGenome dataset](DATASET.md)
-3. [Metrics adopted in our **toolkit**, results, and some common misunderstandings](METRICS.md)
+1. [Install the Requirements](INSTALL.md)
+2. [Prepare the Dataset](DATASET.md)
+3. [Metrics and Results for our Toolkit](METRICS.md)
 4. [Pretrained Models](#pretrained-models)
-5. [Faster R-CNN pre-training](#faster-R-CNN-pre-training)
-6. [Perform training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
+5. [Faster R-CNN Pre-training](#faster-R-CNN-pre-training)
+6. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
 7. [Evaluation on Scene Graph Generation](#Evaluation)
 8. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
 9. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
@@ -44,7 +44,7 @@ Check [INSTALL.md](INSTALL.md) for installation instructions.
 Check [DATASET.md](DATASET.md) for instructions of dataset preprocessing.
 
 ## Metrics and Results
-Explanation of our metrics and reported results are given in [METRICS.md](METRICS.md)
+Explanation of metrics in our **toolkit** and reported results are given in [METRICS.md](METRICS.md)
 
 ## Pretrained Models
 
@@ -138,9 +138,11 @@ CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --master_port 10028 --
 
 ## Other Options that May Improve the SGG
 
-- For some models (not all), turning on or turning off ```MODEL.ROI_RELATION_HEAD.POOLING_ALL_LEVELS``` will affect the performance of predicate prediction.
+- For some models (not all), turning on or turning off ```MODEL.ROI_RELATION_HEAD.POOLING_ALL_LEVELS``` will affect the performance of predicate prediction, e.g., turning it off will improve VCTree PredCls but not the corresponding SGCls and SGGen. For the reported results of VCTree, we simply turn it on for all three protocols like other models.
 
 - For some models (not all), a crazy fusion proposed by [Learning to Count Object](https://arxiv.org/abs/1802.05766) will significantly improves the results, which looks like ```f(x1, x2) = ReLU(x1 + x2) - (x1 - x2)**2```. It can be used to combine the subject and object features in ```roi_heads/relation_head/roi_relation_predictors.py```. For now, most of our model just concatenate them as ```torch.cat((head_rep, tail_rep), dim=-1)```.
+
+- Not to mention the hidden dimensions in the models, e.g., ```MODEL.ROI_RELATION_HEAD.CONTEXT_HIDDEN_DIM```. Due to the limited time, we didn't fully explore all the settings in this project, I won't be surprised if you improve our results by simply changing one of our hyper-parameters
 
 ## Tips and Tricks for any Unbiased TaskX from Biased Training
 
