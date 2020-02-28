@@ -6,6 +6,19 @@
 
 Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) has been accepted by CVPR 2020.
 
+## Contents
+
+1. [Overview](#Overview)
+2. [Install the Requirements](INSTALL.md)
+3. [Prepare the Dataset](DATASET.md)
+4. [Metrics and Results for our Toolkit](METRICS.md)
+5. [Faster R-CNN Pre-training](#pretrained-models)
+6. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
+7. [Evaluation on Scene Graph Generation](#Evaluation)
+8. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
+9. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
+10. [Citations](#Citations)
+
 ## Overview
 
 This project aims to build a new CODEBASE of Scene Graph Generation (SGG), and it is also a Pytorch implementation of the paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949). The previous widely adopted SGG codebase [neural-motifs](https://github.com/rowanz/neural-motifs) is detached from the recent development of Faster/Mask R-CNN. Therefore, I decided to build a scene graph benchmark on top of the well-known [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) project and define relationship prediction as an additional roi_head. By the way, thanks to their elegant framework, this codebase is much more novice-friendly and easier to read/modify for your own projects than previous neural-motifs framework(at least I hope so). It is a pity that when I was working on this project, the [detectron2](https://github.com/facebookresearch/detectron2) had not been released, but I think we can consider [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) as a more stable version with less bugs, hahahaha. I also introduce all the old and new metrics used in SGG, and clarify two common misunderstandings in SGG metrics in [METRICS.md](METRICS.md), which cause abnormal results in some papers.
@@ -22,19 +35,6 @@ Note that all results of VCTree should be better than what we reported in [Unbia
 
 ![alt text](demo/teaser_figure.png "from 'Unbiased Scene Graph Generation from Biased Training'")
 
-## Contents
-
-1. [Install the Requirements](INSTALL.md)
-2. [Prepare the Dataset](DATASET.md)
-3. [Metrics and Results for our Toolkit](METRICS.md)
-4. [Pretrained Models](#pretrained-models)
-5. [Faster R-CNN Pre-training](#faster-R-CNN-pre-training)
-6. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
-7. [Evaluation on Scene Graph Generation](#Evaluation)
-8. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
-9. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
-10. [Citations](#Citations)
-
 ## Installation
 
 Check [INSTALL.md](INSTALL.md) for installation instructions.
@@ -43,14 +43,14 @@ Check [INSTALL.md](INSTALL.md) for installation instructions.
 
 Check [DATASET.md](DATASET.md) for instructions of dataset preprocessing.
 
-## Metrics and Results
-Explanation of metrics in our **toolkit** and reported results are given in [METRICS.md](METRICS.md)
+## Metrics and Results **(IMPORTANT)**
+Explanation of metrics in our toolkit and reported results are given in [METRICS.md](METRICS.md)
 
 ## Pretrained Models
 
 Since we tested many SGG models in our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949), I won't upload all the pretrained SGG models here. However, you can download the [pretrained Faster R-CNN](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21779870&authkey=AH5CPVb9g5E67iQ) we used in the paper, which is the most time consuming step in the whole training process (it took 4 2080ti GPUs). As to the SGG model, you can follow the rest instructions to train your own, which only takes 2 GPUs to train each SGG model. The results should be very close to the reported results given in [METRICS.md](METRICS.md)
 
-After you download the [Faster R-CNN model](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21779870&authkey=AH5CPVb9g5E67iQ), please extract all the files to the directory `/home/username/checkpoints/pretrained_faster_rcnn`.
+After you download the [Faster R-CNN model](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21779870&authkey=AH5CPVb9g5E67iQ), please extract all the files to the directory `/home/username/checkpoints/pretrained_faster_rcnn`. To train your own Faster R-CNN model, please follow the next section.
 
 ## Faster R-CNN pre-training
 The following command can be used to train your own Faster R-CNN model:
