@@ -24,16 +24,16 @@ Note that all results of VCTree should be better than what we reported in [Unbia
 
 ## Contents
 
-* [INSTALL.md](INSTALL.md) - Install the requirements
-* [DATASET.md](DATASET.md) - Prepare the VisualGenome dataset
-* [METRICS.md](METRICS.md) - Metrics adopted in our **toolkit**, results, and some common misunderstandings
-* [Models](README.md#Pretrained Models) - Pretrained Models
-* [Faster RCNN](README.md#Faster R-CNN pre-training) - Faster R-CNN pre-training
-* [Training](README.md#Perform training on Scene Graph Generation) - Perform training on Scene Graph Generation
-* [Evaluation](README.md#Evaluation) - Evaluation on Scene Graph Generation
-* [Other Options](README.md#Other Options that May Improve the SGG) - Other Options that May Improve the SGG
-* [Tips and Tricks](README.md#Tips and Tricks for any "Unbiased TaskX from Biased Training") - Tips and Tricks for any Unbiased Task
-* [Citations](README.md#Citations)
+1. [Install the requirements](INSTALL.md)
+2. [Prepare the VisualGenome dataset](DATASET.md)
+3. [Metrics adopted in our **toolkit**, results, and some common misunderstandings](METRICS.md)
+4. [Pretrained Models](#pretrained-models)
+5. [Faster R-CNN pre-training](#faster-R-CNN-pre-training)
+6. [Perform training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
+7. [Evaluation on Scene Graph Generation](#Evaluation)
+8. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
+9. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
+10. [Citations](#Citations)
 
 ## Installation
 
@@ -142,7 +142,7 @@ CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --master_port 10028 --
 
 - For some models (not all), a crazy fusion proposed by [Learning to Count Object](https://arxiv.org/abs/1802.05766) will significantly improves the results, which looks like ```f(x1, x2) = ReLU(x1 + x2) - (x1 - x2)**2```. It can be used to combine the subject and object features in ```roi_heads/relation_head/roi_relation_predictors.py```. For now, most of our model just concatenate them as ```torch.cat((head_rep, tail_rep), dim=-1)```.
 
-## Tips and Tricks for any "Unbiased TaskX from Biased Training"
+## Tips and Tricks for any Unbiased TaskX from Biased Training
 
 The proposed unbiased counterfactual inference in our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) is not only applicable to SGG. Actually, the similar idea WORKS AS WELL in other tasks when I worked with [Yulei](https://github.com/yuleiniu) (The code will be released on his github upon acceptance). We believe such an counterfactual inference can also be applied to lots of reasoning tasks with significant bias. It basically just runs the model two times (one for original output, another for the intervened output), and the later one gets the biased prior that should be subtracted from the final prediction. But there are three tips you need to bear in mind:
 - The most important things is always the causal graph. You need to find the correct causal graph with an identifiable branch that causes the biased predictions. If the causal graph is incorrect, the rest would be meaningless. Note that causal graph is not the summarization of the existing network (but the guidance to build networks), you should modify your network based on causal graph, but not vise versa. 
