@@ -148,10 +148,12 @@ If you find this project helps your research, please kindly consider citing our 
   year={2019}
 }
 
-@inproceedings{tang2020unbiased,
-  title={Unbiased Scene Graph Generation from Biased Training},
-  author={Tang, Kaihua and Niu, Yulei and Huang, Jianqiang and Shi, Jiaxin and Zhang, Hanwang},
-  booktitle= "Conference on Computer Vision and Pattern Recognition",
-  year={2020}
+@misc{tang2020unbiased,
+    title={Unbiased Scene Graph Generation from Biased Training},
+    author={Kaihua Tang and Yulei Niu and Jianqiang Huang and Jiaxin Shi and Hanwang Zhang},
+    year={2020},
+    eprint={2002.11949},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
 }
 ```
