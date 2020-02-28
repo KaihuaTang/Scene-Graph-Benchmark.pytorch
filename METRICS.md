@@ -24,11 +24,12 @@ When you read/follow a SGG paper, and you find that its performance is abnormall
 
 2. Some researchers misunderstand the protocols of PredCls and SGCls. These two protocols only give ground-truth bounding boxes NOT ground-truth subject object pairs. Some works only predict relationships for ground-truth subject-object pairs in PredCls and SGCls, so their PredCls and SGCls results will extremely high. Note that Recall@K metric is a ranking metric, using ground-truth subject-object pairs can be considerred as giving the perfect ranking. In order to separate from normal PredCls and SGCls,  I name this kind of setting as Top@K Accuracy, which is only applicable to PredCls and SGCls. TYPICAL SYMPTOMS: 1) results of PredCls and SGCls are extremely high while results of SGGen are normal, 2) Recall@50 and Recall@100 of PredCls and SGCls are exactly the same, since the ranking is perfect (Recall@20 is less, for some images have groud-truth relationships more than 20). TYPICAL Paper:[Contrastive Losses](https://arxiv.org/abs/1903.02728).
 
-# Reported Results
-
-### Output Format of Our Code
+# Output Format of Our Code
 
 ![alt text](demo/output_format.png "from 'screenshot'")
+
+
+# Reported Results
 
 ### The results of reimplemented [IMP](https://arxiv.org/abs/1701.02426), [MOTIFS](https://arxiv.org/abs/1711.06640), [VCTree](https://arxiv.org/abs/1812.01880) and our Transformer with X-101-FPN backbone
 All the following results only used two 1080ti GPUs with batch size 8 (increasing batch size will further improves some models a little bit). Note that the reimplemented VCTree is not exactly the same as the [original work](https://github.com/KaihuaTang/VCTree-Scene-Graph-Generation). It's an optimized version for SGCls and SGGen. But PredCls seems not as good as previous, I will try to find the reason later. Hybrid Learning is discarded for simplicity.
