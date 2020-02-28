@@ -16,6 +16,6 @@ To load the generated scene graphs of the given SGG checkpoints, you need to man
 
 ## Results
 
-Sentence-to-Graph Retrieval (S2G) results are given in the paper [Unbiased Scene Graph Generation from Biased Training](https://kaihuatang.github.io/Files/Unbiased_Scene_Graph_Generation_by_Biased_Learning.pdf):
+Sentence-to-Graph Retrieval (S2G) results are given in the paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949):
 
 ![alt text](../../demo/TDE_Results3.png "from 'Unbiased Scene Graph Generation from Biased Training'")

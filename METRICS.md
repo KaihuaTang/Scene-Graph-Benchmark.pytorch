@@ -9,13 +9,13 @@ It's firstly used by [Pixel2Graph](https://arxiv.org/abs/1706.07365) and named b
 It is proposed by our work [VCTree](https://arxiv.org/abs/1812.01880) and Chen et al.s'[KERN](https://arxiv.org/abs/1903.03326) at the same time (CVPR 2019), although we didn't make it as our main contribution and only listed the full results on the [supplementary material](https://zpascal.net/cvpr2019/Tang_Learning_to_Compose_CVPR_2019_supplemental.pdf). However, we also acknowledge the contribution of [KERN](https://arxiv.org/abs/1903.03326), for they gave more mR@K results of previous methods. The main motivation of Mean Recall@K (mR@K) is that the VisualGenome dataset is biased towards dominant predicates. If the 10 most frequent predicates are correctly classified, the accuracy would reach 90% even the rest 40 kinds of predicates are all wrong. This is definitely not what we want. Therefore, Mean Recall@K (mR@K) calculates Recall@K for each predicate category independently then report their mean. 
 
 ### Zero Shot Recall@K (zR@K)
-It is firstly used by [Visual relationship detection with language priors](https://arxiv.org/abs/1608.00187) for VRD dataset, and firstly reported by  [Unbiased Scene Graph Generation from Biased Training](https://kaihuatang.github.io/Files/Unbiased_Scene_Graph_Generation_by_Biased_Learning.pdf) for VisualGenome dataset. In short, it only calculates the Recall@K for those subject-predicate-object combinations that not occurred in the training set.
+It is firstly used by [Visual relationship detection with language priors](https://arxiv.org/abs/1608.00187) for VRD dataset, and firstly reported by  [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) for VisualGenome dataset. In short, it only calculates the Recall@K for those subject-predicate-object combinations that not occurred in the training set.
 
 ### Top@K Accuracy (A@K) 
 It is actually caused by the misunderstanding of PredCls and SGCls protocols. [Contrastive Losses](https://arxiv.org/abs/1903.02728) reported Recall@K of PredCls and SGCls by not just giving ground-truth bounding boxes, but also giving the ground-truth subject-object pairs, so no ranking is involved. The results can only be considerred as Top@K Accuracy (A@K) for the given K ground-truth subject-object pairs. 
 
 ### Sentence-to-Graph Retrieval (S2G)
-S2G is proposed by [Unbiased Scene Graph Generation from Biased Training](https://kaihuatang.github.io/Files/Unbiased_Scene_Graph_Generation_by_Biased_Learning.pdf) as an ideal downstream task that only relies on the quality of SGs, for the existing VQA and Captioning are too complicated and challenged by their own bias. It takes human descriptions as queries, searching for matching scene graphs (images), where SGs are considered as the symbolic representations of images. More details will be explained in [S2G-RETRIEVAL.md](maskrcnn_benchmark/image_retrieval/S2G-RETRIEVAL.md).
+S2G is proposed by [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) as an ideal downstream task that only relies on the quality of SGs, for the existing VQA and Captioning are too complicated and challenged by their own bias. It takes human descriptions as queries, searching for matching scene graphs (images), where SGs are considered as the symbolic representations of images. More details will be explained in [S2G-RETRIEVAL.md](maskrcnn_benchmark/image_retrieval/S2G-RETRIEVAL.md).
 
 # Two Common Misunderstandings in SGG Metrics
 When you read/follow a SGG paper, and you find that its performance is abnormally high for no obvious reasons, whose authors could mess up some metrics.
@@ -79,9 +79,9 @@ MOTIFS | - | - | - | 40.41 | 40.50 | 40.50 | 68.87 | 69.14 | 69.14
 Transformer | - | - | - | 41.75 | 41.84 | 41.84 | 69.08 | 69.36 | 69.36
 VCTree | - | - | - | 48.47 | 48.59 | 48.59 | 68.92 | 69.19 | 69.19
 
-### The results of [Unbiased Scene Graph Generation from Biased Training](https://kaihuatang.github.io/Files/Unbiased_Scene_Graph_Generation_by_Biased_Learning.pdf) with X-101-FPN backbone
+### The results of [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) with X-101-FPN backbone
 
-Note that if you are using the default VCTree settings of this project, all results of VCTree should be better than what we reported in [Unbiased Scene Graph Generation from Biased Training](https://kaihuatang.github.io/Files/Unbiased_Scene_Graph_Generation_by_Biased_Learning.pdf), i.e., the following results, because we optimized the tree construction network after the publication.
+Note that if you are using the default VCTree settings of this project, all results of VCTree should be better than what we reported in [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949), i.e., the following results, because we optimized the tree construction network after the publication.
 
 ### Recall@K and Mean Recall@K 
 
