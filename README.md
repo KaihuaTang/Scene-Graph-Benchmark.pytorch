@@ -6,6 +6,8 @@
 
 Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) has been accepted by CVPR 2020.
 
+## Overview
+
 This project aims to build a new CODEBASE of Scene Graph Generation (SGG), and it is also a Pytorch implementation of the paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949). The previous widely adopted SGG codebase [neural-motifs](https://github.com/rowanz/neural-motifs) is detached from the recent development of Faster/Mask R-CNN. Therefore, I decided to build a scene graph benchmark on top of the well-known [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) project and define relationship prediction as an additional roi_head. By the way, thanks to their elegant framework, this codebase is much more novice-friendly and easier to read/modify for your own projects than previous neural-motifs framework(at least I hope so). It is a pity that when I was working on this project, the [detectron2](https://github.com/facebookresearch/detectron2) had not been released, but I think we can consider [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) as a more stable version with less bugs, hahahaha. I also introduce all the old and new metrics used in SGG, and clarify two common misunderstandings in SGG metrics in [METRICS.md](METRICS.md), which cause abnormal results in some papers.
 
 ### Benefit from the up-to-date Faster R-CNN in [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark), this codebase achieves new state-of-the-art Recall@k on SGCls & SGGen (by 2020.2.16) through the reimplemented VCTree using two 1080ti GPUs and batch size 8:
@@ -19,6 +21,19 @@ Note that all results of VCTree should be better than what we reported in [Unbia
 ### The illustration of the Unbiased SGG from 'Unbiased Scene Graph Generation from Biased Training'
 
 ![alt text](demo/teaser_figure.png "from 'Unbiased Scene Graph Generation from Biased Training'")
+
+## Contents
+
+* [INSTALL.md](INSTALL.md) - Install the requirements
+* [DATASET.md](DATASET.md) - Prepare the VisualGenome dataset
+* [METRICS.md](METRICS.md) - Metrics adopted in our **toolkit**, results, and some common misunderstandings
+* [Models](README.md#Pretrained Models) - Pretrained Models
+* [Faster RCNN](README.md#Faster R-CNN pre-training) - Faster R-CNN pre-training
+* [Training](README.md#Perform training on Scene Graph Generation) - Perform training on Scene Graph Generation
+* [Evaluation](README.md#Evaluation) - Evaluation on Scene Graph Generation
+* [Other Options](README.md#Other Options that May Improve the SGG) - Other Options that May Improve the SGG
+* [Tips and Tricks](README.md#Tips and Tricks for any "Unbiased TaskX from Biased Training") - Tips and Tricks for any Unbiased Task
+* [Citations](README.md#Citations)
 
 ## Installation
 
