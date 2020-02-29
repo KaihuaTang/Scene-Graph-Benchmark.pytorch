@@ -16,11 +16,12 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
     - [Output Format](METRICS.md#output-format-of-our-code)
     - [Reported Results](METRICS.md#reported-results)
 5. [Faster R-CNN Pre-training](#pretrained-models)
-6. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
-7. [Evaluation on Scene Graph Generation](#Evaluation)
-8. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
-9. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
-10. [Citations](#Citations)
+6. [Scene Graph Generation as RoI_Head](#scene-graph-generation-as-RoI_Head)
+7. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
+8. [Evaluation on Scene Graph Generation](#Evaluation)
+9. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
+10. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
+11. [Citations](#Citations)
 
 ## Overview
 
@@ -61,6 +62,14 @@ The following command can be used to train your own Faster R-CNN model:
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --master_port 10001 --nproc_per_node=4 tools/detector_pretrain_net.py --config-file "configs/e2e_relation_detector_X_101_32_8_FPN_1x.yaml" SOLVER.IMS_PER_BATCH 8 TEST.IMS_PER_BATCH 4 DTYPE "float16" SOLVER.MAX_ITER 50000 SOLVER.STEPS "(30000, 45000)" SOLVER.VAL_PERIOD 2000 SOLVER.CHECKPOINT_PERIOD 2000 MODEL.RELATION_ON False OUTPUT_DIR /home/kaihua/checkpoints/pretrained_faster_rcnn SOLVER.PRE_VAL False
 ```
 where ```CUDA_VISIBLE_DEVICES``` and ```--nproc_per_node``` represent the id of GPUs and number of GPUs you use, ```--config-file``` means the config we use, where you can change other parameters. ```SOLVER.IMS_PER_BATCH``` and ```TEST.IMS_PER_BATCH``` are the training and testing batch size respectively, ```DTYPE "float16"``` enables Automatic Mixed Precision supported by [APEX](https://github.com/NVIDIA/apex), ```SOLVER.MAX_ITER``` is the maximum iteration, ```SOLVER.STEPS``` is the steps where we decay the learning rate, ```SOLVER.VAL_PERIOD``` and ```SOLVER.CHECKPOINT_PERIOD``` are the periods of conducting val and saving checkpoint, ```MODEL.RELATION_ON``` means turning on the relationship head or not (since this is the pretraining phase for Faster R-CNN only, we turn off the relationship head),  ```OUTPUT_DIR``` is the output directory to save checkpoints and log (considering `/home/username/checkpoints/pretrained_faster_rcnn`), ```SOLVER.PRE_VAL``` means whether we conduct validation before training or not.
+
+
+## Scene Graph Generation as RoI_Head
+
+To standardize the SGG, I define scene graph generation as an RoI_Head. Referring to the design of other roi_heads like box_head, I put most of the SGG codes under ```maskrcnn_benchmark/modeling/roi_heads/relation_head``` and their calling sequence is as follows:
+
+![alt text](demo/relation_head.png "structure of relation_head")
+
 
 ## Perform training on Scene Graph Generation
 
