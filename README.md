@@ -165,6 +165,11 @@ The proposed unbiased counterfactual inference in our paper [Unbiased Scene Grap
 
 If you think about our advice, you may realize that the only rule is to maintain the independent causal influence from each branch to the target node as stable as possible, and use the causal influence fusion functions that are explicit and explainable. It's probably because the causal effect is very human-centric/subjective/recognizable (sorry, I don't know which word I should use here to express my intuition.), so those unexplainable fusion functions and implicit combined single loss (without auxiliary losses when multiple branches are involved) will mess up influences with different sources.
 
+## To Do List
+
+- [ ] Reorganize Code and Instructions of S2G Retrieval 
+- [ ] Publish Visualization Tool for SGG
+
 ## Citations
 
 If you find this project helps your research, please kindly consider citing our papers in your publications.
