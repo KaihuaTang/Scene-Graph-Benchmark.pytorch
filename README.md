@@ -153,7 +153,7 @@ CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --master_port 10028 --
 ### Examples of Pretrained Causal MOTIFS-SUM models
 Examples of Pretrained Causal MOTIFS-SUM models on SGDet/SGCls/PredCls (batch size 12): [SGDet Download](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21781947&authkey=AF_EM-rkbMyT3gs), [SGCls Download](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21781938&authkey=AO_ddcgNpVVGE-g), [PredCls Download](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21781937&authkey=AOzowl5-07RzJz4)
 
-Corresponding Results (The original models used in the paper are lost. These are the fresh ones, so there are some fluctuations on the results):
+Corresponding Results (The original models used in the paper are lost. These are the fresh ones, so there are some fluctuations on the results. More results can be found in [Reported Results](METRICS.md#reported-results)):
 
 Models |  R@20 | R@50 | R@100 | mR@20 | mR@50 | mR@100 | zR@20 | zR@50 | zR@100
 -- | -- | -- | -- | -- | -- | -- | -- | -- | -- 
