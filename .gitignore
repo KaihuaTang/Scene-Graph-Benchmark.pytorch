@@ -4,8 +4,14 @@ _ext
 *.pyc
 *.so
 maskrcnn_benchmark.egg-info/
+datasets/
+checkpoints/
+glove/
+*.zip
+pretrained_faster_rcnn/
 build/
 dist/
+*.sh
 
 # ipython/jupyter notebooks
 #*.ipynb

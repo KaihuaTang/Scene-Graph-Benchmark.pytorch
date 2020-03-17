@@ -6,6 +6,7 @@ INPUT:
 MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
   WEIGHT: "catalog://ImageNetPretrained/FAIR/20171220/X-101-32x8d"
+  PRETRAINED_DETECTOR_CKPT: "pretrained_faster_rcnn/model_final.pth"
   BACKBONE:
     CONV_BODY: "R-101-FPN"
   RESNETS:
@@ -13,8 +14,8 @@ MODEL:
     STRIDE_IN_1X1: False
     NUM_GROUPS: 32
     WIDTH_PER_GROUP: 8
-  RELATION_ON: False
-  ATTRIBUTE_ON: False
+  RELATION_ON: True
+  ATTRIBUTE_ON: True
   FLIP_AUG: False
   RPN:
     USE_FPN: True
