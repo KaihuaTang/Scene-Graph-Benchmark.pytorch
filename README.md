@@ -183,8 +183,8 @@ If you think about our advice, you may realize that the only rule is to maintain
 
 ## To Do List
 
+- [x] Publish Visualization Tool for SGG
 - [ ] Reorganize Code and Instructions of S2G Retrieval 
-- [ ] Publish Visualization Tool for SGG
 
 ## Citations
 
