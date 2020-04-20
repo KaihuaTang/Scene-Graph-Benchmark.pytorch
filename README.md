@@ -105,7 +105,7 @@ For [VCTree](https://arxiv.org/abs/1812.01880) Model:
 ```bash
 MODEL.ROI_RELATION_HEAD.PREDICTOR VCTreePredictor
 ```
-For our predefined Transformer Model (Note that Transformer Model needs to change SOLVER.BASE_LR to 0.001), which is provided by [Jiaxin Shi](https://github.com/shijx12):
+For our predefined Transformer Model (Note that Transformer Model needs to change SOLVER.BASE_LR to 0.001, SOLVER.SCHEDULE.TYPE to WarmupMultiStepLR, SOLVER.MAX_ITER to 16000, SOLVER.IMS_PER_BATCH to 16, SOLVER.STEPS to (10000, 16000).), which is provided by [Jiaxin Shi](https://github.com/shijx12):
 ```bash
 MODEL.ROI_RELATION_HEAD.PREDICTOR TransformerPredictor
 ```
