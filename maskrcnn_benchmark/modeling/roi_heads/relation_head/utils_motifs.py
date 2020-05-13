@@ -74,7 +74,7 @@ def sort_by_score(proposals, scores):
     scores = scores.split(num_rois, dim=0)
     ordered_scores = []
     for i, (score, num_roi) in enumerate(zip(scores, num_rois)):
-        ordered_scores.append( score - 2.0 * float(num_roi * 2 * num_im + i) )
+        ordered_scores.append( score + 2.0 * float(num_roi * 2 * num_im + i) )
     ordered_scores = cat(ordered_scores, dim=0)
     _, perm = torch.sort(ordered_scores, 0, descending=True)
 
