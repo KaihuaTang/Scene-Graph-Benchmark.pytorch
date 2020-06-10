@@ -11,6 +11,12 @@ dist/
 #*.ipynb
 **/.ipynb_checkpoints/
 
+# dataset
+datasets/vg/
+*.png
+*.jpg
+*.jpeg
+
 # Editor temporaries
 *.swn
 *.swo
