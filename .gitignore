@@ -11,6 +11,9 @@ dist/
 #*.ipynb
 **/.ipynb_checkpoints/
 
+# checkpoint
+checkpoint/
+
 # dataset
 datasets/vg/
 *.png
