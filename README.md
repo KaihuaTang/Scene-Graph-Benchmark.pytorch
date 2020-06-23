@@ -8,8 +8,8 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
 
 ## Recent Updates
 
-- [x] 2020.06.23 Add No Graph Constraint Mean Recall@K (ng-mR@K) and No Graph Constraint Zero-Shot Recall@K (ng-zR@K)[link](METRICS.md#explanation-of-our-metrics)
-- [x] 2020.06.23 Allow Scene Graph Detection (SGDet) on Custom Images[link](#run-SGDet-on-custom-images)
+- [x] 2020.06.23 Add No Graph Constraint Mean Recall@K (ng-mR@K) and No Graph Constraint Zero-Shot Recall@K (ng-zR@K)[\[link\]](METRICS.md#explanation-of-our-metrics)
+- [x] 2020.06.23 Allow Scene Graph Detection (SGDet) on Custom Images[\[link\]](#run-SGDet-on-custom-images)
 
 ## Contents
 
