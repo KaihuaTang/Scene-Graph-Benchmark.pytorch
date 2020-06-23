@@ -74,7 +74,7 @@ class VGDataset(torch.utils.data.Dataset):
         #        index = int(random.random() * len(self.filenames))
         if self.custom_eval:
             img = Image.open(self.custom_files[index]).convert("RGB")
-            target = -1
+            target = torch.LongTensor([-1])
             if self.transforms is not None:
                 img, target = self.transforms(img, target)
             return img, target, index

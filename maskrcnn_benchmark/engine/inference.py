@@ -143,6 +143,7 @@ def inference(
 
     if cfg.TEST.CUSTUM_EVAL:
         torch.save(predictions, os.path.join(cfg.OUTPUT_DIR, 'custom_prediction.pytorch'))
+        print(str(os.path.join(cfg.OUTPUT_DIR, 'custom_prediction.pytorch')) + ' SAVED !')
         return -1.0
 
     return evaluate(cfg=cfg,
