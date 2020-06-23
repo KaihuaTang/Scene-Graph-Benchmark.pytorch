@@ -74,7 +74,10 @@ class VGDataset(torch.utils.data.Dataset):
         #        index = int(random.random() * len(self.filenames))
         if self.custom_eval:
             img = Image.open(self.custom_files[index]).convert("RGB")
-            return img, 0, index
+            target = -1
+            if self.transforms is not None:
+                img, target = self.transforms(img, target)
+            return img, target, index
         
         img = Image.open(self.filenames[index]).convert("RGB")
         if img.size[0] != self.img_info[index]['width'] or img.size[1] != self.img_info[index]['height']:
