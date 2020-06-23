@@ -5,6 +5,8 @@ import torch
 import torchvision
 from torchvision.transforms import functional as F
 
+from maskrcnn_benchmark.structures.bounding_box import BoxList
+
 
 class Compose(object):
     def __init__(self, transforms):
@@ -59,7 +61,8 @@ class Resize(object):
         image = F.resize(image, size)
         if target is None:
             return image
-        target = target.resize(image.size)
+        if isinstance(target, BoxList):
+            target = target.resize(image.size)
         return image, target
 
 
