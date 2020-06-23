@@ -6,13 +6,17 @@
 
 Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) has been accepted by CVPR 2020 (Oral).
 
+## Recent Updates
+
+- [x] 2020.06.23 [No Graph Constraint Mean Recall@K (ng-mR@K) and No Graph Constraint Zero-Shot Recall@K (ng-zR@K)](METRICS.md#explanation-of-our-metrics)
+
 ## Contents
 
 1. [Overview](#Overview)
 2. [Install the Requirements](INSTALL.md)
 3. [Prepare the Dataset](DATASET.md)
 4. [Metrics and Results for our Toolkit](METRICS.md)
-    - [Explanation of R@K, ngR@K, mR@K, zR@K, A@K, S2G](METRICS.md#explanation-of-our-metrics)
+    - [Explanation of R@K, mR@K, zR@K, ng-R@K, ng-mR@K, ng-zR@K, A@K, S2G](METRICS.md#explanation-of-our-metrics)
     - [Output Format](METRICS.md#output-format-of-our-code)
     - [Reported Results](METRICS.md#reported-results)
 5. [Faster R-CNN Pre-training](#pretrained-models)
@@ -180,11 +184,6 @@ The proposed unbiased counterfactual inference in our paper [Unbiased Scene Grap
 - For those final predictions having multiple input branches in the causal graph, it may also need to add auxiliary losses for each branch to stablize the causal influence of each independent branch. Because when these branches have different convergent speeds, those hard branches would easily be learned as unimportant tiny floatings that depend on the fastest converged branch, i.e., different branches should have approximately independent influences.
 
 If you think about our advice, you may realize that the only rule is to maintain the independent causal influence from each branch to the target node as stable as possible, and use the causal influence fusion functions that are explicit and explainable. It's probably because the causal effect is very human-centric/subjective/recognizable (sorry, I don't know which word I should use here to express my intuition.), so those unexplainable fusion functions and implicit combined single loss (without auxiliary losses when multiple branches are involved) will mess up influences with different sources.
-
-## To Do List
-
-- [x] Publish Visualization Tool for SGG
-- [ ] Reorganize Code and Instructions of S2G Retrieval 
 
 ## Citations
 

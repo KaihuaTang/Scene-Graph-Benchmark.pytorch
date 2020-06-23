@@ -12,7 +12,7 @@ from maskrcnn_benchmark.data import get_dataset_statistics
 from maskrcnn_benchmark.structures.bounding_box import BoxList
 from maskrcnn_benchmark.structures.boxlist_ops import boxlist_iou
 from maskrcnn_benchmark.utils.miscellaneous import intersect_2d, argsort_desc, bbox_overlaps
-from maskrcnn_benchmark.data.datasets.evaluation.vg.sgg_eval import SGRecall, SGNoGraphConstraintRecall, SGZeroShotRecall, SGPairAccuracy, SGMeanRecall, SGAccumulateRecall
+from maskrcnn_benchmark.data.datasets.evaluation.vg.sgg_eval import SGRecall, SGNoGraphConstraintRecall, SGZeroShotRecall, SGNGZeroShotRecall, SGPairAccuracy, SGMeanRecall, SGNGMeanRecall, SGAccumulateRecall
 
 def do_vg_evaluation(
     cfg,
@@ -129,6 +129,11 @@ def do_vg_evaluation(
         eval_zeroshot_recall = SGZeroShotRecall(result_dict)
         eval_zeroshot_recall.register_container(mode)
         evaluator['eval_zeroshot_recall'] = eval_zeroshot_recall
+
+        # test on no graph constraint zero-shot recall
+        eval_ng_zeroshot_recall = SGNGZeroShotRecall(result_dict)
+        eval_ng_zeroshot_recall.register_container(mode)
+        evaluator['eval_ng_zeroshot_recall'] = eval_ng_zeroshot_recall
         
         # used by https://github.com/NVIDIA/ContrastiveLosses4VRD for sgcls and predcls
         eval_pair_accuracy = SGPairAccuracy(result_dict)
@@ -139,6 +144,11 @@ def do_vg_evaluation(
         eval_mean_recall = SGMeanRecall(result_dict, num_rel_category, dataset.ind_to_predicates, print_detail=True)
         eval_mean_recall.register_container(mode)
         evaluator['eval_mean_recall'] = eval_mean_recall
+
+        # used for no graph constraint mean Recall@K
+        eval_ng_mean_recall = SGNGMeanRecall(result_dict, num_rel_category, dataset.ind_to_predicates, print_detail=True)
+        eval_ng_mean_recall.register_container(mode)
+        evaluator['eval_ng_mean_recall'] = eval_ng_mean_recall
 
         # prepare all inputs
         global_container = {}
@@ -156,12 +166,15 @@ def do_vg_evaluation(
         
         # calculate mean recall
         eval_mean_recall.calculate_mean_recall(mode)
+        eval_ng_mean_recall.calculate_mean_recall(mode)
         
         # print result
         result_str += eval_recall.generate_print_string(mode)
         result_str += eval_nog_recall.generate_print_string(mode)
         result_str += eval_zeroshot_recall.generate_print_string(mode)
+        result_str += eval_ng_zeroshot_recall.generate_print_string(mode)
         result_str += eval_mean_recall.generate_print_string(mode)
+        result_str += eval_ng_mean_recall.generate_print_string(mode)
         
         if cfg.MODEL.ROI_RELATION_HEAD.USE_GT_BOX:
             result_str += eval_pair_accuracy.generate_print_string(mode)
@@ -246,6 +259,7 @@ def evaluate_relation_of_one_image(groundtruth, prediction, global_container, ev
 
     # to calculate the prior label based on statistics
     evaluator['eval_zeroshot_recall'].prepare_zeroshot(global_container, local_container)
+    evaluator['eval_ng_zeroshot_recall'].prepare_zeroshot(global_container, local_container)
 
     if mode == 'predcls':
         local_container['pred_boxes'] = local_container['gt_boxes']
@@ -296,8 +310,12 @@ def evaluate_relation_of_one_image(groundtruth, prediction, global_container, ev
     evaluator['eval_pair_accuracy'].calculate_recall(global_container, local_container, mode)
     # Mean Recall
     evaluator['eval_mean_recall'].collect_mean_recall_items(global_container, local_container, mode)
+    # No Graph Constraint Mean Recall
+    evaluator['eval_ng_mean_recall'].collect_mean_recall_items(global_container, local_container, mode)
     # Zero shot Recall
     evaluator['eval_zeroshot_recall'].calculate_recall(global_container, local_container, mode)
+    # No Graph Constraint Zero-Shot Recall
+    evaluator['eval_ng_zeroshot_recall'].calculate_recall(global_container, local_container, mode)
 
     return 
 
