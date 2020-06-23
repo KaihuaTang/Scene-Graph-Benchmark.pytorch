@@ -574,6 +574,11 @@ _C.TEST.RELATION.LATER_NMS_PREDICTION_THRES = 0.3
 _C.TEST.RELATION.SYNC_GATHER = False
 
 _C.TEST.ALLOW_LOAD_FROM_CACHE = True
+
+
+_C.TEST.CUSTUM_EVAL = False
+_C.TEST.CUSTUM_PATH = '.'
+
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #

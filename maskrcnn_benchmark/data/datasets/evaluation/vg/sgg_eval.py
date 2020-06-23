@@ -314,9 +314,11 @@ class SGMeanRecall(SceneGraphEvaluation):
         result_str += ' for mode=%s, type=Mean Recall.' % mode
         result_str += '\n'
         if self.print_detail:
+            result_str += '----------------------- Details ------------------------\n'
             for n, r in zip(self.rel_name_list, self.result_dict[mode + '_mean_recall_list'][100]):
                 result_str += '({}:{:.4f}) '.format(str(n), r)
             result_str += '\n'
+            result_str += '--------------------------------------------------------\n'
 
         return result_str
 
@@ -384,9 +386,11 @@ class SGNGMeanRecall(SceneGraphEvaluation):
         result_str += ' for mode=%s, type=No Graph Constraint Mean Recall.' % mode
         result_str += '\n'
         if self.print_detail:
+            result_str += '----------------------- Details ------------------------\n'
             for n, r in zip(self.rel_name_list, self.result_dict[mode + '_ng_mean_recall_list'][100]):
                 result_str += '({}:{:.4f}) '.format(str(n), r)
             result_str += '\n'
+            result_str += '--------------------------------------------------------\n'
 
         return result_str
 

@@ -18,7 +18,7 @@ class VGDataset(torch.utils.data.Dataset):
 
     def __init__(self, split, img_dir, roidb_file, dict_file, image_file, transforms=None,
                 filter_empty_rels=True, num_im=-1, num_val_im=5000,
-                filter_duplicate_rels=True, filter_non_overlap=True, flip_aug=False):
+                filter_duplicate_rels=True, filter_non_overlap=True, flip_aug=False, custom_eval=False, custom_path=''):
         """
         Torch dataset for VisualGenome
         Parameters:
@@ -63,11 +63,18 @@ class VGDataset(torch.utils.data.Dataset):
         self.filenames = [self.filenames[i] for i in np.where(self.split_mask)[0]]
         self.img_info = [self.img_info[i] for i in np.where(self.split_mask)[0]]
 
+        self.custom_eval = custom_eval
+        if self.custom_eval:
+            self.get_custom_imgs(custom_path)
+
 
     def __getitem__(self, index):
         #if self.split == 'train':
         #    while(random.random() > self.img_info[index]['anti_prop']):
         #        index = int(random.random() * len(self.filenames))
+        if self.custom_eval:
+            img = Image.open(self.custom_files[index]).convert("RGB")
+            return img, 0, index
         
         img = Image.open(self.filenames[index]).convert("RGB")
         if img.size[0] != self.img_info[index]['width'] or img.size[1] != self.img_info[index]['height']:
@@ -103,6 +110,10 @@ class VGDataset(torch.utils.data.Dataset):
         }
         return result
 
+    def get_custom_imgs(self, path):
+        self.custom_files = []
+        for file_name in os.listdir(path):
+            self.custom_files.append(os.path.join(path, file_name))
 
     def get_img_info(self, index):
         # WARNING: original image_file.json has several pictures with false image size
@@ -159,6 +170,8 @@ class VGDataset(torch.utils.data.Dataset):
             return target
 
     def __len__(self):
+        if self.custom_eval:
+            return len(self.custom_files)
         return len(self.filenames)
 
 

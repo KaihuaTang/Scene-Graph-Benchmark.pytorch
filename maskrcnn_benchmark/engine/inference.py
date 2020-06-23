@@ -141,6 +141,10 @@ def inference(
         expected_results_sigma_tol=expected_results_sigma_tol,
     )
 
+    if cfg.TEST.CUSTUM_EVAL:
+        torch.save(predictions, os.path.join(cfg.OUTPUT_DIR, 'custom_prediction.pytorch'))
+        return -1.0
+
     return evaluate(cfg=cfg,
                     dataset=dataset,
                     predictions=predictions,
