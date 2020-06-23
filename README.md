@@ -8,8 +8,8 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
 
 ## Recent Updates
 
-- [x] 2020.06.23 Add No Graph Constraint Mean Recall@K (ng-mR@K) and No Graph Constraint Zero-Shot Recall@K (ng-zR@K)[\[link\]](METRICS.md#explanation-of-our-metrics)
-- [x] 2020.06.23 Allow Scene Graph Detection (SGDet) on Custom Images[\[link\]](#run-SGDet-on-custom-images)
+- [x] 2020.06.23 Add No Graph Constraint Mean Recall@K (ng-mR@K) and No Graph Constraint Zero-Shot Recall@K (ng-zR@K) [\[link\]](METRICS.md#explanation-of-our-metrics)
+- [x] 2020.06.23 Allow Scene Graph Detection (SGDet) Evaluation on Custom Images [\[link\]](#SGDet-eval-on-custom-images)
 
 ## Contents
 
@@ -24,7 +24,7 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
 6. [Scene Graph Generation as RoI_Head](#scene-graph-generation-as-RoI_Head)
 7. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
 8. [Evaluation on Scene Graph Generation](#Evaluation)
-9. [SGDet on Custum Images](#run-SGDet-on-custom-images)
+9. [SGDet Eval on Custum Images](#SGDet-eval-on-custom-images)
 10. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
 11. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
 12. [Citations](#Citations)
@@ -170,7 +170,7 @@ MOTIFS-SGCls-TDE    | 20.47 | 26.31 | 28.79 | 9.80 | 13.21 | 15.06 | 1.91 | 2.95
 MOTIFS-PredCls-none | 59.64 | 66.11 | 67.96 | 11.46 | 14.60 | 15.84 | 5.79 | 11.02 | 14.74
 MOTIFS-PredCls-TDE  | 33.38 | 45.88 | 51.25 | 17.85 | 24.75 | 28.70 | 8.28 | 14.31 | 18.04
 
-## Run SGDet on Custom Images
+## SGDet Eval on Custom Images
 Note that evaluation on custum images is only valid for SGDet model, because PredCls and SGCls model requires additional ground-truth bounding boxes information. You only need to turn on the switch TEST.CUSTUM_EVAL and give a folder path that contains the custom images to TEST.CUSTUM_PATH. Only JPG files are allowed. The output will be custom_prediction.pytorch saved in OUTPUT_DIR, which can be read by torch.load().
 
 Test Example 1 : (SGDet, Motif Model)
