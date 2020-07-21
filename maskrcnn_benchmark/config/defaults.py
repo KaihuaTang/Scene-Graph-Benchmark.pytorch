@@ -583,6 +583,7 @@ _C.TEST.CUSTUM_PATH = '.'
 # Misc options
 # ---------------------------------------------------------------------------- #
 _C.OUTPUT_DIR = "."
+_C.DETECTED_SGG_DIR = "."
 _C.GLOVE_DIR = "."
 
 _C.PATHS_CATALOG = os.path.join(os.path.dirname(__file__), "paths_catalog.py")

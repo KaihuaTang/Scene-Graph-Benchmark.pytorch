@@ -10,6 +10,7 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
 
 - [x] 2020.06.23 Add No Graph Constraint Mean Recall@K (ng-mR@K) and No Graph Constraint Zero-Shot Recall@K (ng-zR@K) [\[link\]](METRICS.md#explanation-of-our-metrics)
 - [x] 2020.06.23 Allow Scene Graph Detection (SGDet) on Custom Images [\[link\]](#SGDet-on-custom-images)
+- [x] 2020.07.21 Change Custom Scene Graph Detection Output to Json Files
 
 ## Contents
 
@@ -24,10 +25,11 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
 6. [Scene Graph Generation as RoI_Head](#scene-graph-generation-as-RoI_Head)
 7. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
 8. [Evaluation on Scene Graph Generation](#Evaluation)
-9. [SGDet on Custum Images](#SGDet-on-custom-images)
+9. [Detect Scene Graphs on Your Custum Images](#SGDet-on-custom-images)
 10. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
 11. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
-12. [Citations](#Citations)
+12. [Frequently Asked Questions](#frequently-asked-questions)
+13. [Citations](#Citations)
 
 ## Overview
 
@@ -171,14 +173,14 @@ MOTIFS-PredCls-none | 59.64 | 66.11 | 67.96 | 11.46 | 14.60 | 15.84 | 5.79 | 11.
 MOTIFS-PredCls-TDE  | 33.38 | 45.88 | 51.25 | 17.85 | 24.75 | 28.70 | 8.28 | 14.31 | 18.04
 
 ## SGDet on Custom Images
-Note that evaluation on custum images is only valid for SGDet model, because PredCls and SGCls model requires additional ground-truth bounding boxes information. You only need to turn on the switch TEST.CUSTUM_EVAL and give a folder path that contains the custom images to TEST.CUSTUM_PATH. Only JPG files are allowed. The output will be custom_prediction.pytorch saved in OUTPUT_DIR, which can be read by torch.load().
+Note that evaluation on custum images is only applicable for SGDet model, because PredCls and SGCls model requires additional ground-truth bounding boxes information. To detect scene graphs into a json file on your own images, you need to turn on the switch TEST.CUSTUM_EVAL and give a folder path that contains the custom images to TEST.CUSTUM_PATH. Only JPG files are allowed. The output will be saved as custom_prediction.json in the given DETECTED_SGG_DIR.
 
-Test Example 1 : (SGDet, Motif Model)
+Test Example 1 : (SGDet, Causal, **TDE**, SUM Fusion, MOTIFS Model) [checkpoint](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21781947&authkey=AF_EM-rkbMyT3gs)
 ```bash
-CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --master_port 10027 --nproc_per_node=1 tools/relation_test_net.py --config-file "configs/e2e_relation_X_101_32_8_FPN_1x.yaml" MODEL.ROI_RELATION_HEAD.USE_GT_BOX False MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL False MODEL.ROI_RELATION_HEAD.PREDICTOR MotifPredictor TEST.IMS_PER_BATCH 1 DTYPE "float16" GLOVE_DIR /home/kaihua/glove MODEL.PRETRAINED_DETECTOR_CKPT /home/kaihua/checkpoints/motif-sgdet-exmp OUTPUT_DIR /home/kaihua/checkpoints/motif-sgdet-exmp TEST.CUSTUM_EVAL True TEST.CUSTUM_PATH /home/kaihua/checkpoints/custom_images
+CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --master_port 10027 --nproc_per_node=1 tools/relation_test_net.py --config-file "configs/e2e_relation_X_101_32_8_FPN_1x.yaml" MODEL.ROI_RELATION_HEAD.USE_GT_BOX False MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL False MODEL.ROI_RELATION_HEAD.PREDICTOR CausalAnalysisPredictor MODEL.ROI_RELATION_HEAD.CAUSAL.EFFECT_TYPE TDE MODEL.ROI_RELATION_HEAD.CAUSAL.FUSION_TYPE sum MODEL.ROI_RELATION_HEAD.CAUSAL.CONTEXT_LAYER motifs TEST.IMS_PER_BATCH 1 DTYPE "float16" GLOVE_DIR /home/kaihua/glove MODEL.PRETRAINED_DETECTOR_CKPT /home/kaihua/checkpoints/causal-motifs-sgdet OUTPUT_DIR /home/kaihua/checkpoints/causal-motifs-sgdet TEST.CUSTUM_EVAL True TEST.CUSTUM_PATH /home/kaihua/checkpoints/custom_images DETECTED_SGG_DIR /home/kaihua/checkpoints/your_output_path
 ```
 
-Since we don't need to calculate Recall@K, the output are the raw BoxList instances. You can refer maskrcnn_benchmark / structures / bounding_box.py to see how to use BoxList. BoxList.get_field('pred_labels'), BoxList.get_field('pred_scores'), BoxList.get_field('rel_pair_idxs'), BoxList.get_field('pred_rel_labels') and BoxList.get_field('pred_rel_scores') will return the object labels, object scores, relation pairs, predicate labels and predicate scores. All relations are not filtered, so there could be thousands of relation pairs. You can write your own filtering strategy for different purposes.
+The output is a json file. For each image, the output is a dictionary containing bbox(sorted), bbox_labels(sorted), bbox_scores(sorted), rel_pairs(sorted), rel_labels(sorted), rel_scores(sorted), rel_all_scores(sorted), where the last rel_all_scores give all 51 predicates probability for each pair of objects. Note that there may be some trivial bounding boxes, so you can select top-k bbox for better scene graphs.
 
 
 ## Other Options that May Improve the SGG
@@ -198,11 +200,29 @@ The counterfactual inference is not only applicable to SGG. Actually, my collegu
 
 If you think about our advice, you may realize that the only rule is to maintain the independent causal influence from each branch to the target node as stable as possible, and use the causal influence fusion functions that are explicit and explainable. It's probably because the causal effect is very human-centric/subjective/recognizable (sorry, I don't know which word I should use here to express my intuition.), so those unexplainable fusion functions and implicit combined single loss (without auxiliary losses when multiple branches are involved) will mess up influences with different sources.
 
+## Frequently Asked Questions:
+
+1. Q: Fail to load the given checkpoints.
+A: The model to be loaded is based on the last_checkpoint file in the OUTPUT_DIR path. If you fail to load the given pretained checkpoints, it probably because the last_checkpoint file still provides the path in my workstation rather than your own path.
+
+2. Q: AssertionError on "assert len(fns) == 108073"
+A: If you are working on VG dataset, it is probably caused by the wrong DATASETS (data path) in maskrcnn_benchmark/config/paths_catlog.py. If you are working on your custom datasets, just comment out the assertions.
+
+3. Q: AssertionError on "l_batch == 1" in model_motifs.py
+A: The original MOTIFS code only supports evaluation on 1 GPU. Since my reimplemented motifs is based on their code, I keep this assertion to make sure it won't cause any unexpected errors.
+
 ## Citations
 
-If you find this project helps your research, please kindly consider citing our papers in your publications.
+If you find this project helps your research, please kindly consider citing our project or papers in your publications.
 
 ```
+@misc{tang2020sggcode,
+title = {A Scene Graph Generation codebase in PyTorch},
+author = {Tang, Kaihua},
+year = {2020},
+howpublished = {\url{https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch}},
+}
+
 @inproceedings{tang2018learning,
   title={Learning to Compose Dynamic Tree Structures for Visual Contexts},
   author={Tang, Kaihua and Zhang, Hanwang and Wu, Baoyuan and Luo, Wenhan and Liu, Wei},
@@ -210,10 +230,10 @@ If you find this project helps your research, please kindly consider citing our 
   year={2019}
 }
 
-@article{tang2020unbiased,
+@inproceedings{tang2020unbiased,
   title={Unbiased Scene Graph Generation from Biased Training},
   author={Tang, Kaihua and Niu, Yulei and Huang, Jianqiang and Shi, Jiaxin and Zhang, Hanwang},
-  journal={arXiv preprint arXiv:2002.11949},
+  booktitle= "Conference on Computer Vision and Pattern Recognition",
   year={2020}
 }
 ```
