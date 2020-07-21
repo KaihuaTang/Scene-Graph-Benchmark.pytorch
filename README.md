@@ -8,10 +8,10 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
 
 ## Recent Updates
 
-- [x] 2020.06.23 Add No Graph Constraint Mean Recall@K (ng-mR@K) and No Graph Constraint Zero-Shot Recall@K (ng-zR@K) [\[link\]](METRICS.md#explanation-of-our-metrics)
-- [x] 2020.06.23 Allow Scene Graph Detection (SGDet) on Custom Images [\[link\]](#SGDet-on-custom-images)
-- [x] 2020.07.21 Change Custom Scene Graph Detection Output to Json Files
-- [x] 2020.07.21 Visualize Detected Scene Graphs of Custom Images
+- [x] 2020.06.23 Add no graph constraint mean Recall@K (ng-mR@K) and no graph constraint Zero-Shot Recall@K (ng-zR@K) [\[link\]](METRICS.md#explanation-of-our-metrics)
+- [x] 2020.06.23 Allow scene graph detection (SGDet) on custom images [\[link\]](#SGDet-on-custom-images)
+- [x] 2020.07.21 Change scene graph detection on custom images output to json files [\[link\]](#SGDet-on-custom-images)
+- [x] 2020.07.21 Visualize detected scene graphs of custom images [\[link\]](#Visualize-Detected-SGs-of-Custom-Images)
 
 ## Contents
 
@@ -204,10 +204,8 @@ To visualize the detected scene graphs of custom images, you can follow the jupy
 
 The counterfactual inference is not only applicable to SGG. Actually, my collegue [Yulei](https://github.com/yuleiniu) found that counterfactual causal inference also has significant potential in [unbiased VQA](https://arxiv.org/abs/2006.04315). We believe such an counterfactual inference can also be applied to lots of reasoning tasks with significant bias. It basically just runs the model two times (one for original output, another for the intervened output), and the later one gets the biased prior that should be subtracted from the final prediction. But there are three tips you need to bear in mind:
 - The most important things is always the causal graph. You need to find the correct causal graph with an identifiable branch that causes the biased predictions. If the causal graph is incorrect, the rest would be meaningless. Note that causal graph is not the summarization of the existing network (but the guidance to build networks), you should modify your network based on causal graph, but not vise versa. 
-- For those nodes having multiple input branches in the causal graph, it's crucial to choose the right fusion function. We tested lots of fusion funtions and only found the SUM fusion and GATE fusion consistently working well. The fusion function like element-wise production won't work for TDE analysis in most of the cases, because the causal influence from multiple branches can not be linearly/monotonously separated anymore, i.e., its no longer an identifiable 'influence'.
-- For those final predictions having multiple input branches in the causal graph, it may also need to add auxiliary losses for each branch to stablize the causal influence of each independent branch. Because when these branches have different convergent speeds, those hard branches would easily be learned as unimportant tiny floatings that depend on the fastest converged branch, i.e., different branches should have approximately independent influences.
-
-If you think about our advice, you may realize that the only rule is to maintain the independent causal influence from each branch to the target node as stable as possible, and use the causal influence fusion functions that are explicit and explainable. It's probably because the causal effect is very human-centric/subjective/recognizable (sorry, I don't know which word I should use here to express my intuition.), so those unexplainable fusion functions and implicit combined single loss (without auxiliary losses when multiple branches are involved) will mess up influences with different sources.
+- For those nodes having multiple input branches in the causal graph, it's crucial to choose the right fusion function. We tested lots of fusion funtions and only found the SUM fusion and GATE fusion consistently working well. The fusion function like element-wise production won't work for TDE analysis in most of the cases, because the causal influence from multiple branches can not be linearly separated anymore, which means, it's no longer an identifiable 'influence'.
+- For those final predictions having multiple input branches in the causal graph, it may also need to add auxiliary losses for each branch to stablize the causal influence of each independent branch. Because when these branches have different convergent speeds, those hard branches would easily be learned as unimportant tiny floatings that depend on the fastest/stablest converged branch. Auxiliary losses allow different branches to have independent and equal influences.
 
 ## Frequently Asked Questions:
 
