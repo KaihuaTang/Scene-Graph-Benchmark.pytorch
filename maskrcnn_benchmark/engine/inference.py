@@ -161,6 +161,7 @@ def inference(
 def custom_sgg_post_precessing(predictions):
     output_dict = {}
     for idx, boxlist in enumerate(predictions):
+        xyxy_bbox = boxlist.convert('xyxy').bbox
         # current sgg info
         current_dict = {}
         # sort bbox based on confidence
@@ -170,22 +171,22 @@ def custom_sgg_post_precessing(predictions):
         bbox_labels = []
         bbox_scores = []
         for i in sortedid:
-            bbox.append(boxlist.bbox[i].tolist())
+            bbox.append(xyxy_bbox[i].tolist())
             bbox_labels.append(boxlist.get_field('pred_labels')[i].item())
             bbox_scores.append(boxlist.get_field('pred_scores')[i].item())
         current_dict['bbox'] = bbox
         current_dict['bbox_labels'] = bbox_labels
         current_dict['bbox_scores'] = bbox_scores
         # sorted relationships
-        rel_sortedid, _ = get_sorted_bbox_mapping(boxlist.get_field('pred_rel_scores').max(1)[0].tolist())
+        rel_sortedid, _ = get_sorted_bbox_mapping(boxlist.get_field('pred_rel_scores')[:,1:].max(1)[0].tolist())
         # sorted rel
         rel_pairs = []
         rel_labels = []
         rel_scores = []
         rel_all_scores = []
         for i in rel_sortedid:
-            rel_labels.append(boxlist.get_field('pred_rel_scores')[i].max(0)[1].item())
-            rel_scores.append(boxlist.get_field('pred_rel_scores')[i].max(0)[0].item())
+            rel_labels.append(boxlist.get_field('pred_rel_scores')[i][1:].max(0)[1].item() + 1)
+            rel_scores.append(boxlist.get_field('pred_rel_scores')[i][1:].max(0)[0].item())
             rel_all_scores.append(boxlist.get_field('pred_rel_scores')[i].tolist())
             old_pair = boxlist.get_field('rel_pair_idxs')[i].tolist()
             rel_pairs.append([id2sorted[old_pair[0]], id2sorted[old_pair[1]]])

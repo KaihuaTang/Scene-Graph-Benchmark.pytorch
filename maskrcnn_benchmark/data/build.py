@@ -239,6 +239,10 @@ def make_data_loader(cfg, mode='train', is_distributed=False, start_iter=0):
             custom_data_info['idx_to_files'] = dataset.custom_files
             custom_data_info['ind_to_classes'] = dataset.ind_to_classes
             custom_data_info['ind_to_predicates'] = dataset.ind_to_predicates
+
+            if not os.path.exists(cfg.DETECTED_SGG_DIR):
+                os.makedirs(cfg.DETECTED_SGG_DIR)
+
             with open(os.path.join(cfg.DETECTED_SGG_DIR, 'custom_data_info.json'), 'w') as outfile:  
                 json.dump(custom_data_info, outfile)
             print('=====> ' + str(os.path.join(cfg.DETECTED_SGG_DIR, 'custom_data_info.json')) + ' SAVED !')
