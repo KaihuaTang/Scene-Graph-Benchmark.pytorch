@@ -26,8 +26,8 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
 6. [Scene Graph Generation as RoI_Head](#scene-graph-generation-as-RoI_Head)
 7. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
 8. [Evaluation on Scene Graph Generation](#Evaluation)
-9. [**Detect Scene Graphs on Your Custom Images** :star1:](#SGDet-on-custom-images)
-10. [**Visualize Detected Scene Graphs of Custom Images** :star1:](#Visualize-Detected-SGs-of-Custom-Images)
+9. [**Detect Scene Graphs on Your Custom Images** :star2:](#SGDet-on-custom-images)
+10. [**Visualize Detected Scene Graphs of Custom Images** :star2:](#Visualize-Detected-SGs-of-Custom-Images)
 11. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
 12. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
 13. [Frequently Asked Questions](#frequently-asked-questions)
@@ -211,14 +211,14 @@ If you think about our advice, you may realize that the only rule is to maintain
 
 ## Frequently Asked Questions:
 
-1. Q: Fail to load the given checkpoints.
-A: The model to be loaded is based on the last_checkpoint file in the OUTPUT_DIR path. If you fail to load the given pretained checkpoints, it probably because the last_checkpoint file still provides the path in my workstation rather than your own path.
+1. **Q:** Fail to load the given checkpoints.
+**A:** The model to be loaded is based on the last_checkpoint file in the OUTPUT_DIR path. If you fail to load the given pretained checkpoints, it probably because the last_checkpoint file still provides the path in my workstation rather than your own path.
 
-2. Q: AssertionError on "assert len(fns) == 108073"
-A: If you are working on VG dataset, it is probably caused by the wrong DATASETS (data path) in maskrcnn_benchmark/config/paths_catlog.py. If you are working on your custom datasets, just comment out the assertions.
+2. **Q:** AssertionError on "assert len(fns) == 108073"
+**A:** If you are working on VG dataset, it is probably caused by the wrong DATASETS (data path) in maskrcnn_benchmark/config/paths_catlog.py. If you are working on your custom datasets, just comment out the assertions.
 
-3. Q: AssertionError on "l_batch == 1" in model_motifs.py
-A: The original MOTIFS code only supports evaluation on 1 GPU. Since my reimplemented motifs is based on their code, I keep this assertion to make sure it won't cause any unexpected errors.
+3. **Q:** AssertionError on "l_batch == 1" in model_motifs.py
+**A:** The original MOTIFS code only supports evaluation on 1 GPU. Since my reimplemented motifs is based on their code, I keep this assertion to make sure it won't cause any unexpected errors.
 
 ## Citations
 
