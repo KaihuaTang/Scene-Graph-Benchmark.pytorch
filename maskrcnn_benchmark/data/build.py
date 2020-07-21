@@ -4,6 +4,7 @@ import bisect
 import copy
 import logging
 
+import json
 import torch
 import torch.utils.data
 from maskrcnn_benchmark.utils.comm import get_world_size

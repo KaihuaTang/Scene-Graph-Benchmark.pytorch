@@ -25,7 +25,7 @@ Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.o
 6. [Scene Graph Generation as RoI_Head](#scene-graph-generation-as-RoI_Head)
 7. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
 8. [Evaluation on Scene Graph Generation](#Evaluation)
-9. [Detect Scene Graphs on Your Custum Images](#SGDet-on-custom-images)
+9. [:star2: Detect Scene Graphs on Your Custum Images](#SGDet-on-custom-images)
 10. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
 11. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
 12. [Frequently Asked Questions](#frequently-asked-questions)
