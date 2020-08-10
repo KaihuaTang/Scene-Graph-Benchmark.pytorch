@@ -4,6 +4,7 @@ import bisect
 import copy
 import logging
 
+import json
 import torch
 import torch.utils.data
 from maskrcnn_benchmark.utils.comm import get_world_size
@@ -232,6 +233,19 @@ def make_data_loader(cfg, mode='train', is_distributed=False, start_iter=0):
             batch_sampler=batch_sampler,
             collate_fn=collator,
         )
+        # the dataset information used for scene graph detection on customized images
+        if cfg.TEST.CUSTUM_EVAL:
+            custom_data_info = {}
+            custom_data_info['idx_to_files'] = dataset.custom_files
+            custom_data_info['ind_to_classes'] = dataset.ind_to_classes
+            custom_data_info['ind_to_predicates'] = dataset.ind_to_predicates
+
+            if not os.path.exists(cfg.DETECTED_SGG_DIR):
+                os.makedirs(cfg.DETECTED_SGG_DIR)
+
+            with open(os.path.join(cfg.DETECTED_SGG_DIR, 'custom_data_info.json'), 'w') as outfile:  
+                json.dump(custom_data_info, outfile)
+            print('=====> ' + str(os.path.join(cfg.DETECTED_SGG_DIR, 'custom_data_info.json')) + ' SAVED !')
         data_loaders.append(data_loader)
     if is_train:
         # during training, a single (possibly concatenated) data_loader is returned

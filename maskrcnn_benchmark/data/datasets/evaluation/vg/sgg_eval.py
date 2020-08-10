@@ -46,7 +46,7 @@ class SGRecall(SceneGraphEvaluation):
     def generate_print_string(self, mode):
         result_str = 'SGG eval: '
         for k, v in self.result_dict[mode + '_recall'].items():
-            result_str += '  R @ %d: %.4f; ' % (k, np.mean(v))
+            result_str += '    R @ %d: %.4f; ' % (k, np.mean(v))
         result_str += ' for mode=%s, type=Recall(Main).' % mode
         result_str += '\n'
         return result_str
@@ -105,7 +105,7 @@ class SGNoGraphConstraintRecall(SceneGraphEvaluation):
     def generate_print_string(self, mode):
         result_str = 'SGG eval: '
         for k, v in self.result_dict[mode + '_recall_nogc'].items():
-            result_str += 'ngR @ %d: %.4f; ' % (k, np.mean(v))
+            result_str += ' ng-R @ %d: %.4f; ' % (k, np.mean(v))
         result_str += ' for mode=%s, type=No Graph Constraint Recall(Main).' % mode
         result_str += '\n'
         return result_str
@@ -142,10 +142,14 @@ class SGNoGraphConstraintRecall(SceneGraphEvaluation):
             phrdet=mode=='phrdet',
         )
 
+        local_container['nogc_pred_to_gt'] = nogc_pred_to_gt
+
         for k in self.result_dict[mode + '_recall_nogc']:
             match = reduce(np.union1d, nogc_pred_to_gt[:k])
             rec_i = float(len(match)) / float(gt_rels.shape[0])
             self.result_dict[mode + '_recall_nogc'][k].append(rec_i)
+
+        return local_container
 
 """
 Zero Shot Scene Graph
@@ -161,7 +165,7 @@ class SGZeroShotRecall(SceneGraphEvaluation):
     def generate_print_string(self, mode):
         result_str = 'SGG eval: '
         for k, v in self.result_dict[mode + '_zeroshot_recall'].items():
-            result_str += ' zR @ %d: %.4f; ' % (k, np.mean(v))
+            result_str += '   zR @ %d: %.4f; ' % (k, np.mean(v))
         result_str += ' for mode=%s, type=Zero Shot Recall.' % mode
         result_str += '\n'
         return result_str
@@ -193,6 +197,50 @@ class SGZeroShotRecall(SceneGraphEvaluation):
 
 
 """
+No Graph Constraint Mean Recall
+"""
+class SGNGZeroShotRecall(SceneGraphEvaluation):
+    def __init__(self, result_dict):
+        super(SGNGZeroShotRecall, self).__init__(result_dict)
+    
+    def register_container(self, mode):
+        self.result_dict[mode + '_ng_zeroshot_recall'] = {20: [], 50: [], 100: []} 
+
+    def generate_print_string(self, mode):
+        result_str = 'SGG eval: '
+        for k, v in self.result_dict[mode + '_ng_zeroshot_recall'].items():
+            result_str += 'ng-zR @ %d: %.4f; ' % (k, np.mean(v))
+        result_str += ' for mode=%s, type=No Graph Constraint Zero Shot Recall.' % mode
+        result_str += '\n'
+        return result_str
+
+    def prepare_zeroshot(self, global_container, local_container):
+        gt_rels = local_container['gt_rels']
+        gt_classes = local_container['gt_classes']
+        zeroshot_triplets = global_container['zeroshot_triplet']
+
+        sub_id, ob_id, pred_label = gt_rels[:, 0], gt_rels[:, 1], gt_rels[:, 2]
+        gt_triplets = np.column_stack((gt_classes[sub_id], gt_classes[ob_id], pred_label))  # num_rel, 3
+
+        self.zeroshot_idx = np.where( intersect_2d(gt_triplets, zeroshot_triplets).sum(-1) > 0 )[0].tolist()
+
+    def calculate_recall(self, global_container, local_container, mode):
+        pred_to_gt = local_container['nogc_pred_to_gt']
+
+        for k in self.result_dict[mode + '_ng_zeroshot_recall']:
+            # Zero Shot Recall
+            match = reduce(np.union1d, pred_to_gt[:k])
+            if len(self.zeroshot_idx) > 0:
+                if not isinstance(match, (list, tuple)):
+                    match_list = match.tolist()
+                else:
+                    match_list = match
+                zeroshot_match = len(self.zeroshot_idx) + len(match_list) - len(set(self.zeroshot_idx + match_list))
+                zero_rec_i = float(zeroshot_match) / float(len(self.zeroshot_idx))
+                self.result_dict[mode + '_ng_zeroshot_recall'][k].append(zero_rec_i)
+
+
+"""
 Give Ground Truth Object-Subject Pairs
 Calculate Recall for SG-Cls and Pred-Cls
 Only used in https://github.com/NVIDIA/ContrastiveLosses4VRD for sgcls and predcls
@@ -210,7 +258,7 @@ class SGPairAccuracy(SceneGraphEvaluation):
         for k, v in self.result_dict[mode + '_accuracy_hit'].items():
             a_hit = np.mean(v)
             a_count = np.mean(self.result_dict[mode + '_accuracy_count'][k])
-            result_str += '  A @ %d: %.4f; ' % (k, a_hit/a_count)
+            result_str += '    A @ %d: %.4f; ' % (k, a_hit/a_count)
         result_str += ' for mode=%s, type=TopK Accuracy.' % mode
         result_str += '\n'
         return result_str
@@ -262,13 +310,15 @@ class SGMeanRecall(SceneGraphEvaluation):
     def generate_print_string(self, mode):
         result_str = 'SGG eval: '
         for k, v in self.result_dict[mode + '_mean_recall'].items():
-            result_str += ' mR @ %d: %.4f; ' % (k, float(v))
+            result_str += '   mR @ %d: %.4f; ' % (k, float(v))
         result_str += ' for mode=%s, type=Mean Recall.' % mode
         result_str += '\n'
         if self.print_detail:
+            result_str += '----------------------- Details ------------------------\n'
             for n, r in zip(self.rel_name_list, self.result_dict[mode + '_mean_recall_list'][100]):
                 result_str += '({}:{:.4f}) '.format(str(n), r)
             result_str += '\n'
+            result_str += '--------------------------------------------------------\n'
 
         return result_str
 
@@ -313,6 +363,78 @@ class SGMeanRecall(SceneGraphEvaluation):
             self.result_dict[mode + '_mean_recall'][k] = sum_recall / float(num_rel_no_bg)
         return
 
+
+"""
+No Graph Constraint Mean Recall
+"""
+class SGNGMeanRecall(SceneGraphEvaluation):
+    def __init__(self, result_dict, num_rel, ind_to_predicates, print_detail=False):
+        super(SGNGMeanRecall, self).__init__(result_dict)
+        self.num_rel = num_rel
+        self.print_detail = print_detail
+        self.rel_name_list = ind_to_predicates[1:] # remove __background__
+
+    def register_container(self, mode):
+        self.result_dict[mode + '_ng_mean_recall'] = {20: 0.0, 50: 0.0, 100: 0.0}
+        self.result_dict[mode + '_ng_mean_recall_collect'] = {20: [[] for i in range(self.num_rel)], 50: [[] for i in range(self.num_rel)], 100: [[] for i in range(self.num_rel)]}
+        self.result_dict[mode + '_ng_mean_recall_list'] = {20: [], 50: [], 100: []}
+
+    def generate_print_string(self, mode):
+        result_str = 'SGG eval: '
+        for k, v in self.result_dict[mode + '_ng_mean_recall'].items():
+            result_str += 'ng-mR @ %d: %.4f; ' % (k, float(v))
+        result_str += ' for mode=%s, type=No Graph Constraint Mean Recall.' % mode
+        result_str += '\n'
+        if self.print_detail:
+            result_str += '----------------------- Details ------------------------\n'
+            for n, r in zip(self.rel_name_list, self.result_dict[mode + '_ng_mean_recall_list'][100]):
+                result_str += '({}:{:.4f}) '.format(str(n), r)
+            result_str += '\n'
+            result_str += '--------------------------------------------------------\n'
+
+        return result_str
+
+    def collect_mean_recall_items(self, global_container, local_container, mode):
+        pred_to_gt = local_container['nogc_pred_to_gt']
+        gt_rels = local_container['gt_rels']
+
+        for k in self.result_dict[mode + '_ng_mean_recall_collect']:
+            # the following code are copied from Neural-MOTIFS
+            match = reduce(np.union1d, pred_to_gt[:k])
+            # NOTE: by kaihua, calculate Mean Recall for each category independently
+            # this metric is proposed by: CVPR 2019 oral paper "Learning to Compose Dynamic Tree Structures for Visual Contexts"
+            recall_hit = [0] * self.num_rel
+            recall_count = [0] * self.num_rel
+            for idx in range(gt_rels.shape[0]):
+                local_label = gt_rels[idx,2]
+                recall_count[int(local_label)] += 1
+                recall_count[0] += 1
+
+            for idx in range(len(match)):
+                local_label = gt_rels[int(match[idx]),2]
+                recall_hit[int(local_label)] += 1
+                recall_hit[0] += 1
+            
+            for n in range(self.num_rel):
+                if recall_count[n] > 0:
+                    self.result_dict[mode + '_ng_mean_recall_collect'][k][n].append(float(recall_hit[n] / recall_count[n]))
+ 
+
+    def calculate_mean_recall(self, mode):
+        for k, v in self.result_dict[mode + '_ng_mean_recall'].items():
+            sum_recall = 0
+            num_rel_no_bg = self.num_rel - 1
+            for idx in range(num_rel_no_bg):
+                if len(self.result_dict[mode + '_ng_mean_recall_collect'][k][idx+1]) == 0:
+                    tmp_recall = 0.0
+                else:
+                    tmp_recall = np.mean(self.result_dict[mode + '_ng_mean_recall_collect'][k][idx+1])
+                self.result_dict[mode + '_ng_mean_recall_list'][k].append(tmp_recall)
+                sum_recall += tmp_recall
+
+            self.result_dict[mode + '_ng_mean_recall'][k] = sum_recall / float(num_rel_no_bg)
+        return
+
 """
 Accumulate Recall:
 calculate recall on the whole dataset instead of each image
@@ -327,7 +449,7 @@ class SGAccumulateRecall(SceneGraphEvaluation):
     def generate_print_string(self, mode):
         result_str = 'SGG eval: '
         for k, v in self.result_dict[mode + '_accumulate_recall'].items():
-            result_str += ' aR @ %d: %.4f; ' % (k, float(v))
+            result_str += '   aR @ %d: %.4f; ' % (k, float(v))
         result_str += ' for mode=%s, type=Accumulate Recall.' % mode
         result_str += '\n'
         return result_str

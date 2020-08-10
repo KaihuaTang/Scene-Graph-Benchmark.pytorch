@@ -574,10 +574,16 @@ _C.TEST.RELATION.LATER_NMS_PREDICTION_THRES = 0.3
 _C.TEST.RELATION.SYNC_GATHER = False
 
 _C.TEST.ALLOW_LOAD_FROM_CACHE = True
+
+
+_C.TEST.CUSTUM_EVAL = False
+_C.TEST.CUSTUM_PATH = '.'
+
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #
 _C.OUTPUT_DIR = "."
+_C.DETECTED_SGG_DIR = "."
 _C.GLOVE_DIR = "."
 
 _C.PATHS_CATALOG = os.path.join(os.path.dirname(__file__), "paths_catalog.py")

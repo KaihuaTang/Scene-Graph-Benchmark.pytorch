@@ -64,7 +64,8 @@ class ROIBoxHead(torch.nn.Module):
                     return x, proposals, {}
             else:
                 # mode==sgdet
-                proposals = self.samp_processor.assign_label_to_proposals(proposals, targets)
+                if self.training or not self.cfg.TEST.CUSTUM_EVAL:
+                    proposals = self.samp_processor.assign_label_to_proposals(proposals, targets)
                 x = self.feature_extractor(features, proposals)
                 class_logits, box_regression = self.predictor(x)
                 proposals = add_predict_logits(proposals, class_logits)
