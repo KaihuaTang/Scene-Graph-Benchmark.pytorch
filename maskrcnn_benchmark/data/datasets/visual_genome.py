@@ -49,23 +49,23 @@ class VGDataset(torch.utils.data.Dataset):
         self.filter_duplicate_rels = filter_duplicate_rels and self.split == 'train'
         self.transforms = transforms
 
-        self.ind_to_classes, self.ind_to_predicates, self.ind_to_attributes = load_info(dict_file) # contiguous 151, 51 containing __background__
-
-        self.categories = {i : self.ind_to_classes[i] for i in range(len(self.ind_to_classes))}
-
-        self.split_mask, self.gt_boxes, self.gt_classes, self.gt_attributes, self.relationships = load_graphs(
-            self.roidb_file, self.split, num_im, num_val_im=num_val_im,
-            filter_empty_rels=filter_empty_rels,
-            filter_non_overlap=self.filter_non_overlap,
-        )
-
-        self.filenames, self.img_info = load_image_filenames(img_dir, image_file) # length equals to split_mask
-        self.filenames = [self.filenames[i] for i in np.where(self.split_mask)[0]]
-        self.img_info = [self.img_info[i] for i in np.where(self.split_mask)[0]]
-
         self.custom_eval = custom_eval
         if self.custom_eval:
             self.get_custom_imgs(custom_path)
+        else:
+            self.ind_to_classes, self.ind_to_predicates, self.ind_to_attributes = load_info(dict_file) # contiguous 151, 51 containing __background__
+
+            self.categories = {i : self.ind_to_classes[i] for i in range(len(self.ind_to_classes))}
+
+            self.split_mask, self.gt_boxes, self.gt_classes, self.gt_attributes, self.relationships = load_graphs(
+                self.roidb_file, self.split, num_im, num_val_im=num_val_im,
+                filter_empty_rels=filter_empty_rels,
+                filter_non_overlap=self.filter_non_overlap,
+            )
+
+            self.filenames, self.img_info = load_image_filenames(img_dir, image_file) # length equals to split_mask
+            self.filenames = [self.filenames[i] for i in np.where(self.split_mask)[0]]
+            self.img_info = [self.img_info[i] for i in np.where(self.split_mask)[0]]
 
 
     def __getitem__(self, index):
