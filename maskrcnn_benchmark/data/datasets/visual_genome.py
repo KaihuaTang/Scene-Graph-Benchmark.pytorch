@@ -49,14 +49,13 @@ class VGDataset(torch.utils.data.Dataset):
         self.filter_duplicate_rels = filter_duplicate_rels and self.split == 'train'
         self.transforms = transforms
 
+        self.ind_to_classes, self.ind_to_predicates, self.ind_to_attributes = load_info(dict_file) # contiguous 151, 51 containing __background__
+        self.categories = {i : self.ind_to_classes[i] for i in range(len(self.ind_to_classes))}
+
         self.custom_eval = custom_eval
         if self.custom_eval:
             self.get_custom_imgs(custom_path)
         else:
-            self.ind_to_classes, self.ind_to_predicates, self.ind_to_attributes = load_info(dict_file) # contiguous 151, 51 containing __background__
-
-            self.categories = {i : self.ind_to_classes[i] for i in range(len(self.ind_to_classes))}
-
             self.split_mask, self.gt_boxes, self.gt_classes, self.gt_attributes, self.relationships = load_graphs(
                 self.roidb_file, self.split, num_im, num_val_im=num_val_im,
                 filter_empty_rels=filter_empty_rels,
@@ -115,8 +114,11 @@ class VGDataset(torch.utils.data.Dataset):
 
     def get_custom_imgs(self, path):
         self.custom_files = []
+        self.img_info = []
         for file_name in os.listdir(path):
             self.custom_files.append(os.path.join(path, file_name))
+            img = Image.open(os.path.join(path, file_name)).convert("RGB")
+            self.img_info.append({'width':int(img.width), 'height':int(img.height)})
 
     def get_img_info(self, index):
         # WARNING: original image_file.json has several pictures with false image size
