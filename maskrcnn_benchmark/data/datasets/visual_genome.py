@@ -84,7 +84,7 @@ class VGDataset(torch.utils.data.Dataset):
 
         flip_img = (random.random() > 0.5) and self.flip_aug and (self.split == 'train')
         
-        target = self.get_groundtruth(index, flip_img)
+        target = self.get_groundtruth(index, flip_img=flip_img)
 
         if flip_img:
             img = img.transpose(method=Image.FLIP_LEFT_RIGHT)
