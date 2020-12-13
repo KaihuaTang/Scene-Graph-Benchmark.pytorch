@@ -19,3 +19,7 @@ To load the generated scene graphs of the given SGG checkpoints, you need to man
 Sentence-to-Graph Retrieval (S2G) results are given in the paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949):
 
 ![alt text](../../demo/TDE_Results3.png "from 'Unbiased Scene Graph Generation from Biased Training'")
+
+## Acknowledgement
+
+Since I lost part of the code when I merged several jupyter notes into the preprocessing.py files, the "image_graph" and "text_graph" are missing in the original txt_img_sg dictionary. Thanks to the [Haeyong Kang](https://scholar.google.com/citations?user=v_tUj4oAAAAJ&hl=ko) from KAIST, he filled in the missing part of preprocessing.py.
