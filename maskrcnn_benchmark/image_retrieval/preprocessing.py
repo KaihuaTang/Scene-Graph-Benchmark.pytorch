@@ -173,8 +173,59 @@ def generate_txt_img_sg(img_sg, txt_sg):
                 entities = [txt_obj2id[e] for e in item['entities']]
                 relations = [[entities[r[0]], entities[r[1]], txt_rel2id[r[2]]] for r in item['relations']]
                 encode_txt['entities'] = encode_txt['entities'] + entities
-                encode_txt['relations'] = encode_txt['relations'] + relations
-            txt_img_sg[coco_id] = {'img':encode_img, 'txt':encode_txt}
+                encode_txt['relations'] = encode_txt['relations'] + relations            
+            # ===================================================================================
+            # ============================== Acknowledgement ====================================
+            # ===================================================================================
+            #     Since I lost part of the code when I merged several jupyter notes into this 
+            # preprocessing.py files, the "image_graph" and "text_graph" are missing in the 
+            # original preprocessing.py. Thanks to the Haeyong Kang from KAIST, he filled in
+            # the missing part by the following code.
+            # ===================================================================================
+            
+            # === for image_graph ============================================here
+            entities = encode_img['entities']
+            relations = encode_img['relations']
+            if len(relations) == 0:
+                img_graph = np.zeros((len(entities), 1))
+            else:
+                img_graph = np.zeros((len(entities), len(relations)))
+
+            image_graph = []
+            for i, es in enumerate(entities):
+                for j, rs in enumerate(relations):
+                    if es in rs:
+                        img_graph[i,j] = 1
+                    else:
+                        img_graph[i,j] = 0
+
+            image_graph.append(img_graph.tolist())
+
+            # === for text_graph =============================================here
+            entities = encode_txt['entities']
+            relations = encode_txt['relations']
+            if len(relations) == 0:
+                txt_graph = np.zeros((len(entities), 1))
+            else:
+                txt_graph = np.zeros((len(entities), len(relations)))
+
+            text_graph = []
+            for i, es in enumerate(entities):
+                for j, rs in enumerate(relations):
+                    if es in rs:
+                        txt_graph[i,j] = 1
+                    else:
+                        txt_graph[i,j] = 0
+
+            text_graph.append(txt_graph.tolist())
+
+            #txt_img_sg[coco_id] = {'img':encode_img, 'txt':encode_txt}
+            txt_img_sg[coco_id] = {
+                'img':encode_img,
+                'image_graph':image_graph,
+                'txt':encode_txt,
+                'text_graph':text_graph}
+
     return txt_img_sg
 
 
