@@ -16,6 +16,7 @@ from torch.nn.utils import weight_norm
 from tqdm import tqdm
 
 from maskrcnn_benchmark.config import cfg
+from maskrcnn_benchmark.config.paths_catalog import DatasetCatalog
 from maskrcnn_benchmark.data import make_data_loader
 from maskrcnn_benchmark.solver import make_lr_scheduler
 from maskrcnn_benchmark.solver import make_optimizer
@@ -30,13 +31,20 @@ from maskrcnn_benchmark.utils.imports import import_file
 from maskrcnn_benchmark.utils.logger import setup_logger, debug_print
 from maskrcnn_benchmark.utils.miscellaneous import mkdir, save_config
 from maskrcnn_benchmark.utils.metric_logger import MetricLogger
+import os
 
 class SGEncoding(data.Dataset):
     """ SGEncoding dataset """
     def __init__(self, train_ids, test_ids, sg_data, test_on=False, val_on=False, num_test=5000, num_val=5000):
         super(SGEncoding, self).__init__()
-        cap_graph = json.load(open('/data1/vg_capgraphs_anno.json'))
-        vg_dict = json.load(open('/home/kaihua/projects/maskrcnn-benchmark/datasets/vg/VG-SGG-dicts-with-attri.json'))
+
+        data_dir = DatasetCatalog.DATA_DIR
+        attrs = DatasetCatalog.DATASETS["VG_stanford_filtered_with_attribute"]
+        cap_graph_file = os.path.join(data_dir, attrs["capgraphs_file"])
+        vg_dict_file =  os.path.join(data_dir, attrs["dict_file"])
+
+        cap_graph = json.load(open(cap_graph_file))
+        vg_dict = json.load(open(vg_dict_file))
         self.img_txt_sg = sg_data
         self.key_list = list(self.img_txt_sg.keys())
         self.key_list.sort()

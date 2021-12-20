@@ -6,7 +6,8 @@ import copy
 
 
 class DatasetCatalog(object):
-    DATA_DIR = "datasets"
+    DATA_DIR = "/home/users/alatif/data/ImageCorpora/"
+    #DATA_DIR = "/media/rafi/Samsung_T5/_DATASETS/"
     DATASETS = {
         "coco_2017_train": {
             "img_dir": "coco/train2017",
@@ -116,6 +117,7 @@ class DatasetCatalog(object):
             "roidb_file": "vg/VG-SGG-with-attri.h5",
             "dict_file": "vg/VG-SGG-dicts-with-attri.json",
             "image_file": "vg/image_data.json",
+            "capgraphs_file": "vg/vg_capgraphs_anno.json",
         },
     }
 

@@ -94,7 +94,9 @@ class ApplySingleAttention(nn.Module):
         # apply single glimpse attention
         v_ = self.lin_v(v).transpose(1,2).unsqueeze(2) # batch, dim, 1, num_obj
         q_ = self.lin_q(q).transpose(1,2).unsqueeze(3) # batch, dim, que_len, 1
-        v_ = torch.matmul(v_, atten.unsqueeze(1)) # batch, dim, 1, que_len
+        #v_ = torch.matmul(v_, atten.unsqueeze(1)) # batch, dim, 1, que_len
+        # This is the only way I found to make it match the dimension in the previous comment: # batch, dim, 1, que_len
+        v_ = torch.matmul(v_.squeeze(2), atten.transpose(3,1).squeeze(2)).unsqueeze(2)
         h_ = torch.matmul(v_, q_) # batch, dim, 1, 1
         h_ = h_.squeeze(3).squeeze(2) # batch, dim
         

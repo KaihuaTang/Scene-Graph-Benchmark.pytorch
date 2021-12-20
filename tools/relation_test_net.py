@@ -85,13 +85,24 @@ def main():
     if cfg.MODEL.ATTRIBUTE_ON:
         iou_types = iou_types + ("attributes", )
     output_folders = [None] * len(cfg.DATASETS.TEST)
+
     dataset_names = cfg.DATASETS.TEST
+
+    # This variable enables the script to run the test on any dataset split.
+    if cfg.DATASETS.TO_TEST:
+        assert cfg.DATASETS.TO_TEST in {'train', 'val', 'test', None}
+        if cfg.DATASETS.TO_TEST == 'train':
+            dataset_names = cfg.DATASETS.TRAIN
+        elif cfg.DATASETS.TO_TEST == 'val':
+            dataset_names = cfg.DATASETS.VAL
+
+
     if cfg.OUTPUT_DIR:
         for idx, dataset_name in enumerate(dataset_names):
             output_folder = os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
             mkdir(output_folder)
             output_folders[idx] = output_folder
-    data_loaders_val = make_data_loader(cfg, mode="test", is_distributed=distributed)
+    data_loaders_val = make_data_loader(cfg=cfg, mode="test", is_distributed=distributed, dataset_to_test=cfg.DATASETS.TO_TEST)
     for output_folder, dataset_name, data_loader_val in zip(output_folders, dataset_names, data_loaders_val):
         inference(
             cfg,
@@ -110,3 +121,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    torch.cuda.empty_cache()

@@ -38,11 +38,19 @@ def evaluator(logger, input_lists):
     # shape [num_image, 2, hidden_dim]
     cat_data = torch.cat(cat_data, dim=0).squeeze(2)
 
-    similarity = cat_data[:, 0, :] @ (cat_data[:, 1, :].transpose(0,1))   # img to txt
-    similarity = similarity.transpose(0,1)                                # txt to img
+    img_graph_embeds = cat_data[:, 0, :]
+    txt_graph_embeds = cat_data[:, 1, :]
 
-    pred_rank = (similarity > similarity.diag().view(-1, 1)).sum(-1)
+    similarity = img_graph_embeds @ txt_graph_embeds.T
 
+    norm_1 = img_graph_embeds.norm(dim=1, p=2)
+    norm_2 = txt_graph_embeds.norm(dim=1, p=2)
+    norm = norm_1.unsqueeze(1) * norm_2.unsqueeze(1).T
+    #Normalize the similarity scores to make them comparable
+    similarity = similarity / norm
+
+    pred_rank = (similarity >= similarity.diag().view(-1, 1)).sum(-1)
+    #pred_rank = (similarity >= (torch.ones_like(similarity.diag()) * similarity.diag().mean()).view(-1, 1)).sum(-1)
     num_sample = pred_rank.shape[0]
     thres = [1, 5, 10, 20, 50, 100]
     for k in thres:

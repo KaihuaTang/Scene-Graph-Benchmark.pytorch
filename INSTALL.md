@@ -46,7 +46,13 @@ python setup.py build_ext install
 cd $INSTALL_DIR
 git clone https://github.com/NVIDIA/apex.git
 cd apex
+
+# WARNING if you use older Versions of Pytorch (anything below 1.7), you will need a hard reset,
+# as the newer version of apex does require newer pytorch versions. Ignore the hard reset otherwise.
+git reset --hard 3fe10b5597ba14a748ebb271a6ab97c09c5701ac
+
 python setup.py install --cuda_ext --cpp_ext
+
 
 # install PyTorch Detection
 cd $INSTALL_DIR
