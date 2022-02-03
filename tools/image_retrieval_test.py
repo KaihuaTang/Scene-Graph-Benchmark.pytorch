@@ -26,7 +26,7 @@ except ImportError:
     raise ImportError('Use APEX for multi-precision via apex.amp')
 
 # Do Not set it above 5000, overwise you will start to run tests on the validation data...
-GALLERY_SIZE = 50
+GALLERY_SIZE = 5000
 output_dir = "/home/rafi/PycharmProjects/clp-sose21-pm-vision/results/image_retrieval/"
 
 
@@ -135,8 +135,8 @@ def main():
     _, test_result = execute_test(cfg, args.local_rank, args.distributed, logger)
 
     threshold_list = [None]
-    # This range has been chosen because the mean of the diagonal on the dev set was around 0.6X
-    threshold_list.extend(np.linspace(0.55, 0.7, 15))
+    # This range has been chosen because the mean of the diagonal on the dev set was around 0.9X
+    threshold_list.extend(np.linspace(0.80, 0.99, 15))
 
     fei_fei_recall = "feifei_johnson_recall"
     ir_type = f"vg_{GALLERY_SIZE}_graph_query"
