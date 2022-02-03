@@ -56,19 +56,31 @@ torch.manual_seed(0)
 import random
 random.seed(0)
 
+output_path = '/media/rafi/Samsung_T5/_DATASETS/vg/model/results/sg_of_causal_sgdet_ctx_only_%s_%d.pytorch'
 sg_train_path = '/media/rafi/Samsung_T5/_DATASETS/vg/sgg/train_eval/train_sg_of_causal_sgdet_ctx_only.json'
 sg_test_path = '/media/rafi/Samsung_T5/_DATASETS/vg/sgg/test_eval/test_sg_of_causal_sgdet_ctx_only.json'
-output_path = '/media/rafi/Samsung_T5/_DATASETS/vg/model/results/sg_of_causal_sgdet_ctx_only_%s_%d.pytorch'
-sg_data_train = json.load(open(sg_train_path))
-sg_data_test = json.load(open(sg_test_path))
-#sg_data = torch.load(sg_train_path)
-#sg_data.update(torch.load(sg_test_path))
-sg_data = sg_data_train.copy()
-sg_data.update(sg_data_test)
-train_ids = list(sg_data_train.keys())
-print("Number of Training Samples", len(train_ids))
-test_ids = list(sg_data_test.keys())
-print("Number of Testing Samples", len(test_ids))
+sg_val_path = '/media/rafi/Samsung_T5/_DATASETS/vg/sgg/val_eval/val_sg_of_causal_sgdet_ctx_only.json'
+
+def get_dataset():
+    """
+    Returns the ids of training samples, testing samples, and all scene graph relevant data for training
+    :return:
+    """
+    print("Loading samples. This can take a while.")
+    sg_data_train = json.load(open(sg_train_path))
+    sg_data_val = json.load(open(sg_val_path))
+    sg_data_test = json.load(open(sg_test_path))
+    #sg_data = torch.load(sg_train_path)
+    #sg_data.update(torch.load(sg_test_path))
+    #Merge the val sample to the training data, it would be a waste...
+    sg_data_train.update(sg_data_val)
+    sg_data = sg_data_train.copy()
+    sg_data.update(sg_data_test)
+    train_ids = list(sg_data_train.keys())
+    print("Number of Training Samples", len(train_ids))
+    test_ids = list(sg_data_test.keys())
+    print("Number of Testing Samples", len(test_ids))
+    return train_ids, test_ids, sg_data
 
 def train(cfg, local_rank, distributed, logger):
     model = SGEncode()
@@ -93,7 +105,9 @@ def train(cfg, local_rank, distributed, logger):
             find_unused_parameters=True,
         )
     debug_print(logger, 'end distributed')
-    
+
+    train_ids, test_ids, sg_data = get_dataset()
+
     train_data_loader = get_loader(cfg, train_ids, test_ids, sg_data=sg_data, test_on=False, val_on=False, num_test=5000, num_val=1000)
     val_data_loader = get_loader(cfg, train_ids, test_ids, sg_data=sg_data, test_on=False, val_on=True, num_test=5000, num_val=1000)
     test_data_loader = get_loader(cfg, train_ids, test_ids, sg_data=sg_data, test_on=True, val_on=False, num_test=5000, num_val=1000)
