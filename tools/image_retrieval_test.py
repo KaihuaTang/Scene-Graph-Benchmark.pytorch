@@ -25,7 +25,7 @@ try:
 except ImportError:
     raise ImportError('Use APEX for multi-precision via apex.amp')
 
-# Do Not set it above 5000, overwise you will start to run tests on the validation data...
+# Do Not set it above 5000, otherwise you will start to run tests on the validation data...
 GALLERY_SIZE = 5000
 output_dir = "/home/rafi/PycharmProjects/clp-sose21-pm-vision/results/image_retrieval/"
 
