@@ -280,7 +280,7 @@ if __name__ == "__main__":
     type = "new"
     parser.add_argument(
         "--test-results-path",
-        default=f"/home/users/alatif/data/ImageCorpora/vg/checkpoint/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_{split}/",
+        default=f"/home/users/alatif/data/ImageCorpora/vg/checkpoint/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_{type}/",
         help="path to config file",
     )
 
