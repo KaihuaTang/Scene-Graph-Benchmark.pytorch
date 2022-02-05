@@ -278,16 +278,15 @@ def preprocess_scene_graphs_output( detected_path, output_file_name):
 # --output-file-name is the name of the output file (will be created under the path given for --test-results-path )
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Preprocessing of Scene Graphs for Image Retrieval")
-    type = "train"
     parser.add_argument(
         "--test_results_path",
-        default=f"/home/users/alatif/data/ImageCorpora/vg/checkpoint/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_{type}/",
+        default=f"/home/users/alatif/data/ImageCorpora/vg/checkpoint/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute/",
         help="path to config file",
     )
 
     parser.add_argument(
         "--output_file_name",
-        default=f"{type}_sg_of_causal_sgdet_ctx_only.json",
+        default=f"sg_of_causal_sgdet_ctx_only.json",
         help="creates this file under the path specified with  --test-results-path",
     )
 
