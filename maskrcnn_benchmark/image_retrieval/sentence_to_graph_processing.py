@@ -1,7 +1,5 @@
 import argparse
 import os
-import torch
-from maskrcnn_benchmark.config import cfg
 from maskrcnn_benchmark.config.paths_catalog import DatasetCatalog
 import sng_parser
 import json
@@ -9,7 +7,7 @@ from tqdm import tqdm
 import collections
 import torch
 import torchtext as tt
-import spacy
+import pandas
 
 def make_vocab(all_caps, outpath, file_name_entity, file_name_relation, freq=5):
     counter_entity = collections.Counter()
@@ -40,9 +38,40 @@ def make_vocab(all_caps, outpath, file_name_entity, file_name_relation, freq=5):
     return vocab_entity, vocab_relation
 
 
-def extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary, stop_words):
+def extract_text_graph_no_stopwords(all_caps, entity_vocabulary, relation_vocabulary):
+    """
+    This function tries to recreate the data found under "vg_coco_id_to_capgraphs", in the file vg_capgraphs_anno.json.
+    Only based on the existing vocabulary that was extracted from vg_capgraphs_anno.json.
+    :param all_caps:
+    :param entity_vocabulary:
+    :param relation_vocabulary:
+    :return:
     """
 
+    new_graphs = {}
+    for k in tqdm(all_caps.keys()):
+        caps = all_caps[k]
+        raw_graphs = [sng_parser.parse(cap) for cap in caps]
+        cleaned_graphs = []
+        for i, g in enumerate(raw_graphs):
+            entities = g["entities"]
+            relations = g["relations"]
+            filtered_entities = [e["lemma_head"] if e["lemma_head"] in entity_vocabulary else 'none' for e in entities]
+            filtered_relations = [[r["subject"], r["object"], r["lemma_relation"]] for r in relations if
+                                  r["lemma_relation"] in relation_vocabulary]
+
+            extracted_graph = {'entities': filtered_entities, 'relations': filtered_relations}
+            cleaned_graphs.append(extracted_graph)
+
+        new_graphs[k] = cleaned_graphs
+
+    return new_graphs
+
+def extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary, stop_words):
+    """
+    This function tries to recreate the data found under "vg_coco_id_to_capgraphs", in the file vg_capgraphs_anno.json.
+    Only based on the existing vocabulary that was extracted from vg_capgraphs_anno.json, and a list of stop words if
+    needed.
     :param all_caps:
     :param entity_vocabulary:
     :param relation_vocabulary:
@@ -101,16 +130,26 @@ def extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary, stop_wo
 
     return new_graphs
 
+def check_graph_versus_original(original_graphs, new_graphs):
+
+
+    different_list = {}
+    for k in tqdm(original_graphs.keys()):
+        original = original_graphs[k]
+        new = new_graphs[k]
+        count = 0
+        count_rel = 0
+        for i, _ in enumerate(original):
+            if len(original[i]["entities"]) != len(new[i]["entities"]) :
+                count += 1
+            if len(original[i]["relations"]) != len(new[i]["relations"]):
+                count_rel += 1
+        if count > 0 or count_rel > 0:
+            different_list[k] = {"ent_diff":count, "rel_diff":count_rel }
+    return different_list
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Transform Normal Sentences to Graphs")
-    parser.add_argument(
-        "--config-file",
-        default="",
-        metavar="FILE",
-        help="path to config file",
-        type=str,
-    )
 
     parser.add_argument(
         "--outpath",
@@ -129,12 +168,11 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    spacy.load('en_core_web_sm')
-
     ent_file = "vocab_entity.pth"
     rel_file = "vocab_relation.pth"
     data_dir = DatasetCatalog.DATA_DIR
     attrs = DatasetCatalog.DATASETS["VG_stanford_filtered_with_attribute"]
+    # This is vg_capgraphs_anno.json
     cap_graph_file = os.path.join(data_dir, attrs["capgraphs_file"])
     vg_dict_file = os.path.join(data_dir, attrs["dict_file"])
     image_file = os.path.join(data_dir, attrs["image_file"])
@@ -148,16 +186,20 @@ if __name__ == "__main__":
 
     entity_vocabulary = cap_graph["cap_category"].keys()
     relation_vocabulary = cap_graph["cap_predicate"].keys()
-
+    save_path = os.path.join(args.outpath, args.graph_file_name)
 
     entity_vocab, relation_vocab = make_vocab(all_caps, args.outpath, ent_file, rel_file)
 
-    stop_words = [ e for e in entity_vocab.itos if e not in entity_vocabulary]
+    if os.path.exists(save_path):
+        new_graphs = json.load(open(save_path))
+    else:
+        # stop_words = [e for e in entity_vocab.itos if e not in entity_vocabulary]
+        # new_graphs = extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary, stop_words)
+        new_graphs = extract_text_graph_no_stopwords(all_caps, entity_vocabulary, relation_vocabulary)
+        with open(save_path, 'w', encoding='utf-8') as f:
+            json.dump(new_graphs, f, ensure_ascii=False, indent=4)
+        print("Saved graph")
 
-    news_graphs = extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary, stop_words)
-
-    with open(os.path.join(args.outpath, args.graph_file_name), 'w', encoding='utf-8') as f:
-        json.dump(news_graphs, f, ensure_ascii=False, indent=4)
-    print("Saved graph")
-    # Looks like "this" is a stop word => completely removed.
-    # Proper Name are replaced by 'none'
+    # diff_list = check_graph_versus_original(all_graphs, new_graphs)
+    # df = pandas.DataFrame([diff_list[k] for k in diff_list.keys()])
+    # print(df.mean())

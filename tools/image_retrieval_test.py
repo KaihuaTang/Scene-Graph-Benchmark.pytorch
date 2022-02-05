@@ -26,11 +26,11 @@ except ImportError:
     raise ImportError('Use APEX for multi-precision via apex.amp')
 
 # Do Not set it above 5000, otherwise you will start to run tests on the validation data...
-GALLERY_SIZE = 5000
-output_dir = "/home/rafi/PycharmProjects/clp-sose21-pm-vision/results/image_retrieval/"
+GALLERY_SIZE = 150
+OUTPUT_DIR = "/media/rafi/Samsung_T5/_DATASETS/vg/new_model/"
 
 
-def execute_test(cfg, local_rank, distributed, logger):
+def execute_test(cfg, local_rank, distributed, logger, gallery_size):
     model = SGEncode()
     device = torch.device(cfg.MODEL.DEVICE)
     model.to(device)
@@ -56,7 +56,7 @@ def execute_test(cfg, local_rank, distributed, logger):
 
     train_ids, test_ids, sg_data = get_dataset()
 
-    test_data_loader = get_loader(cfg, train_ids, test_ids, sg_data=sg_data, test_on=True, val_on=False, num_test=GALLERY_SIZE, num_val=1000)
+    test_data_loader = get_loader(cfg, train_ids, test_ids, sg_data=sg_data, test_on=True, val_on=False, num_test=gallery_size, num_val=1000)
 
     debug_print(logger, 'end dataloader')
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
@@ -93,8 +93,15 @@ def main():
         default=None,
         nargs=argparse.REMAINDER,
     )
+    parser.add_argument("--gallery-size", type=int, default=GALLERY_SIZE)
+
 
     args = parser.parse_args()
+    #Work Around due to cfg.merge_from_list()
+    gallery_size = args.gallery_size
+    # Do Not set it above 5000, otherwise you will start to run tests on the validation data...
+    assert gallery_size <= 5000
+    del(args.gallery_size)
 
     num_gpus = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
     args.distributed = num_gpus > 1
@@ -112,6 +119,9 @@ def main():
 
     output_dir = cfg.OUTPUT_DIR
     if output_dir:
+        mkdir(output_dir)
+    else:
+        output_dir = OUTPUT_DIR
         mkdir(output_dir)
 
     logger = setup_logger("image_retrieval_using_sg", output_dir, get_rank())
@@ -132,14 +142,14 @@ def main():
     # save overloaded model config in the output directory
     save_config(cfg, output_config_path)
 
-    _, test_result = execute_test(cfg, args.local_rank, args.distributed, logger)
+    _, test_result = execute_test(cfg, args.local_rank, args.distributed, logger, gallery_size)
 
     threshold_list = [None]
     # This range has been chosen because the mean of the diagonal on the dev set was around 0.9X
     threshold_list.extend(np.linspace(0.80, 0.99, 15))
 
     fei_fei_recall = "feifei_johnson_recall"
-    ir_type = f"vg_{GALLERY_SIZE}_graph_query"
+    ir_type = f"vg_{gallery_size}_graph_query"
 
     eval_name = lambda caption_type, recall_type: f"{caption_type}_{recall_type}"
 
