@@ -11,7 +11,7 @@ import torch
 import torchtext as tt
 import spacy
 
-def make_vocab(all_caps, outpath, file_name_entity, file_name_relation, freq=1):
+def make_vocab(all_caps, outpath, file_name_entity, file_name_relation, freq=5):
     counter_entity = collections.Counter()
     counter_relation = collections.Counter()
     # result = tt.vocab.Vocab(counter_obj, min_freq=1)
@@ -40,7 +40,7 @@ def make_vocab(all_caps, outpath, file_name_entity, file_name_relation, freq=1):
     return vocab_entity, vocab_relation
 
 
-def extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary):
+def extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary, stop_words):
     """
 
     :param all_caps:
@@ -65,9 +65,35 @@ def extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary):
             #     continue
             # else:
             # TODO find out the logic he used for Stop words or proper name
-            filtered_entities = [e["lemma_head"] if e["lemma_head"] in entity_vocabulary else 'none' for e in entities]
+            filtered_entities = []
+            stop_i = []
+            for i , e in enumerate(entities):
+                entity_lemma = e["lemma_head"]
+                if entity_lemma in entity_vocabulary:
+                    filtered_entities.append(entity_lemma)
+                elif entity_lemma in stop_words:
+                    #filtered_entities.append('STOP')
+                    stop_i.append(i)
+                else:
+                    filtered_entities.append('none')
+            pass
+            # filtered_entities = [e["lemma_head"] if e["lemma_head"] in entity_vocabulary else 'none' for e in entities]
             filtered_relations = [[r["subject"], r["object"], r["lemma_relation"]] for r in relations if
                                   r["lemma_relation"] in relation_vocabulary]
+
+            # remove stop words and adjust index for relations
+            for s in reversed(stop_i):
+                last_index = len(filtered_relations) - 1
+                for i in range(last_index, -1, -1):
+                    first_index = filtered_relations[i][0]
+                    second_index = filtered_relations[i][1]
+                    if first_index > s:
+                        filtered_relations[i][0] = first_index - 1
+                    if second_index > s:
+                        filtered_relations[i][1] = second_index - 1
+                    if first_index == s or second_index == s:
+                        filtered_relations.pop(i)
+
             extracted_graph = {'entities': filtered_entities, 'relations': filtered_relations}
             cleaned_graphs.append(extracted_graph)
 
@@ -123,8 +149,12 @@ if __name__ == "__main__":
     entity_vocabulary = cap_graph["cap_category"].keys()
     relation_vocabulary = cap_graph["cap_predicate"].keys()
 
+
     entity_vocab, relation_vocab = make_vocab(all_caps, args.outpath, ent_file, rel_file)
-    news_graphs = extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary)
+
+    stop_words = [ e for e in entity_vocab.itos if e not in entity_vocabulary]
+
+    news_graphs = extract_text_graph(all_caps, entity_vocabulary, relation_vocabulary, stop_words)
 
     with open(os.path.join(args.outpath, args.graph_file_name), 'w', encoding='utf-8') as f:
         json.dump(news_graphs, f, ensure_ascii=False, indent=4)
