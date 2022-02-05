@@ -13,6 +13,8 @@ Download the ground-truth captions and generated sentence graphs from [here](htt
 Please note that this file needs to be configured properly in maskrcnn_benchmark/config/paths_catalog.py, See `DATASETS`, `VG_stanford_filtered_with_attribute` under the key `capgraphs_file`.
 
 We used [SceneGraphParser](https://github.com/vacancy/SceneGraphParser) to generate these sentence graphs.
+The script ```maskrcnn_benchmark/image_retrieval/sentence_to_graph_processing.py``` partially shows, how the text scene graphs were generated (under the key `vg_coco_id_to_capgraphs` in the dowloaded generated sentence graphs file).
+
 
 Create the test results of the SGDet model for the training and test datasets with:
 
@@ -38,14 +40,15 @@ and
 
 ## Training and Evaluation
 
-You need to manually set ```sg_train_path``` and ```sg_test_path``` in ```tools/image_retrieval_main.py``` to `/home/kaihua/checkpoints/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_train/sg_of_causal_sgdet_ctx_only.json`
-
+You need to manually set ```sg_train_path```, ```sg_val_path``` and ```sg_test_path``` in ```tools/image_retrieval_main.py``` to `/home/kaihua/checkpoints/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_train/sg_of_causal_sgdet_ctx_only.json`
+, `/home/kaihua/checkpoints/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_val/sg_of_causal_sgdet_ctx_only.json`
 and 
 
 `/home/kaihua/checkpoints/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_test/sg_of_causal_sgdet_ctx_only.json` respectively.
 
 
-If you use your own pretrained model: keep in mind that you need to evaluate your model on **both training and testing set** to get the generated crude scene graphs. Our evaluation code will automatically saves the crude SGGs into ```checkpoints/MODEL_NAME/inference/VG_stanford_filtered_wth_attribute_test/```  or ```checkpoints/MODEL_NAME/inference/VG_stanford_filtered_wth_attribute_train/```
+If you use your own pretrained model: keep in mind that you need to evaluate your model on ** training, validation and testing set ** to get the generated crude scene graphs. Our evaluation code will automatically saves the crude SGGs into ```checkpoints/MODEL_NAME/inference/VG_stanford_filtered_with_attribute_test/```  or ```checkpoints/MODEL_NAME/inference/VG_stanford_filtered_with_attribute_train/```
+or ```checkpoints/MODEL_NAME/inference/VG_stanford_filtered_with_attribute_val/```
 
 
 
@@ -54,6 +57,14 @@ Run the ```tools/image_retrieval_main.py``` for both training and evaluation.
 For example, you can train it with:
 
 ```tools/image_retrieval_main.py --config-file "configs/e2e_relation_X_101_32_8_FPN_1x.yaml" SOLVER.IMS_PER_BATCH 32 SOLVER.PRE_VAL True SOLVER.SCHEDULE.TYPE WarmupMultiStepLR SOLVER.MAX_ITER 18 SOLVER.CHECKPOINT_PERIOD 3 OUTPUT_DIR /media/rafi/Samsung_T5/_DATASETS/vg/model/ SOLVER.VAL_PERIOD 3```
+
+You call also run an evaluation on the testing set only with:
+
+```tools/image_retrieval_test.py --config-file "configs/e2e_relation_X_101_32_8_FPN_1x.yaml" SOLVER.IMS_PER_BATCH 32 MODEL.PRETRAINED_DETECTOR_CKPT /media/rafi/Samsung_T5/_DATASETS/vg/model/[your_model_name].pytorch OUTPUT_DIR /media/rafi/Samsung_T5/_DATASETS/vg/model/results```
+
+Please note that the calculation logic differs from the one used in ```tools/image_retrieval_main.py```.
+Details of the calculation can be found under ```Test Cases Metrics.pdf```, under the Type Fei Fei.
+
 
 ## Results
 
