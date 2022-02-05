@@ -263,9 +263,10 @@ def preprocess_scene_graphs_output( detected_path, output_file_name):
             valid_ids.append(img_id)
 
     output = generate_detect_sg(detected_result, detected_info, valid_ids, img_coco, obj_thres = 0.1)
-    #cap_graph['vg_coco_id_to_capgraphs']
-    cap_graph_new = json.load(open(os.path.join("/home/users/alatif/data/ImageCorpora/vg/checkpoint/causal-motifs-sgdet/inference/new_graphs.json")))
-    txt_img_sg = generate_txt_img_sg(output, cap_graph_new)
+
+    # You can replace cap_graph['vg_coco_id_to_capgraphs'] by the graphs produced in
+    # maskrcnn_benchmark/image_retrieval/sentence_to_graph_processing.py if you want.
+    txt_img_sg = generate_txt_img_sg(output, cap_graph['vg_coco_id_to_capgraphs'])
 
     with open(output_path, 'w') as outfile:
         json.dump(txt_img_sg, outfile)
@@ -277,24 +278,20 @@ def preprocess_scene_graphs_output( detected_path, output_file_name):
 # --output-file-name is the name of the output file (will be created under the path given for --test-results-path )
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Preprocessing of Scene Graphs for Image Retrieval")
-    type = "new"
+    type = "train"
     parser.add_argument(
-        "--test-results-path",
+        "--test_results_path",
         default=f"/home/users/alatif/data/ImageCorpora/vg/checkpoint/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_{type}/",
         help="path to config file",
     )
 
     parser.add_argument(
-        "--output-file-name",
+        "--output_file_name",
         default=f"{type}_sg_of_causal_sgdet_ctx_only.json",
         help="creates this file under the path specified with  --test-results-path",
     )
 
     args = parser.parse_args()
 
-    path = lambda s : f"/home/users/alatif/data/ImageCorpora/vg/checkpoint/causal-motifs-sgdet/inference/VG_stanford_filtered_with_attribute_{s}"
-    l = ["train", "val", "test"]
-    path_to_test_results = args.test_results_path
-    outputfile_name = args.output_file_name
-    for s in l:
-        preprocess_scene_graphs_output(path(s), outputfile_name)
+
+    preprocess_scene_graphs_output(args.test_results_path, args.output_file_name)
