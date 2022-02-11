@@ -325,7 +325,7 @@ def run_test(cfg, model, test_data_loader, distributed, logger):
                     or len(bg_img['relations']) < 1 \
                     or len(bg_txt['relations']) < 1:
                 bad_sample_list.append(sub_iteration)
-                next
+                continue
 
             fg_img['entities'] = fg_img['entities'].to(device)
             fg_img['relations'] = fg_img['relations'].to(device)
