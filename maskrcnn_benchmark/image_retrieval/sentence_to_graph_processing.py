@@ -175,8 +175,7 @@ if __name__ == "__main__":
     # This is vg_capgraphs_anno.json
     cap_graph_file = os.path.join(data_dir, attrs["capgraphs_file"])
     vg_dict_file = os.path.join(data_dir, attrs["dict_file"])
-    image_file = os.path.join(data_dir, attrs["image_file"])
-    roidb_file = os.path.join(data_dir, attrs["roidb_file"])
+
 
     cap_graph = json.load(open(cap_graph_file))
     vg_dict = json.load(open(vg_dict_file))
