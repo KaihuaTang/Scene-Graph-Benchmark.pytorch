@@ -47,6 +47,9 @@ def get_dataset_statistics(cfg):
         data = DatasetCatalog.get(dataset_name, cfg)
         factory = getattr(D, data["factory"])
         args = data["args"]
+        # Remove it because not part of the original repo (factory cant deal with additional parameters...).
+        if "capgraphs_file" in args.keys():
+            del args["capgraphs_file"]
         dataset = factory(**args)
         statistics.append(dataset.get_statistics())
     logger.info('finish')
