@@ -190,6 +190,10 @@ def load_word_vectors(root, wv_type, dim):
         except Exception as e:
             print("Error loading the model from {}{}".format(fname_pt, str(e)))
             sys.exit(-1)
+    else:
+        print("INFO File not found: ", fname + '.pt')
+    if not os.path.isfile(fname + '.txt'):
+        print("INFO File not found: ", fname + '.txt')
     if os.path.isfile(fname + '.txt'):
         fname_txt = fname + '.txt'
         cm = open(fname_txt, 'rb')

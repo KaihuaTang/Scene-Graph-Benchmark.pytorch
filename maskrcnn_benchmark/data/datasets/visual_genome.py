@@ -115,10 +115,17 @@ class VGDataset(torch.utils.data.Dataset):
     def get_custom_imgs(self, path):
         self.custom_files = []
         self.img_info = []
-        for file_name in os.listdir(path):
-            self.custom_files.append(os.path.join(path, file_name))
-            img = Image.open(os.path.join(path, file_name)).convert("RGB")
-            self.img_info.append({'width':int(img.width), 'height':int(img.height)})
+        if os.path.isdir(path):
+            for file_name in tqdm(os.listdir(path)):
+                self.custom_files.append(os.path.join(path, file_name))
+                img = Image.open(os.path.join(path, file_name)).convert("RGB")
+                self.img_info.append({'width':int(img.width), 'height':int(img.height)})
+        # Expecting a list of paths in a json file
+        if os.path.isfile(path):
+            file_list = json.load(open(path))
+            for file in tqdm(file_list):
+                img = Image.open(file).convert("RGB")
+                self.img_info.append({'width': int(img.width), 'height': int(img.height)})
 
     def get_img_info(self, index):
         # WARNING: original image_file.json has several pictures with false image size
