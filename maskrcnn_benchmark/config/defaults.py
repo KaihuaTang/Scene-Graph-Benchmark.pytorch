@@ -78,6 +78,7 @@ _C.DATASETS.TRAIN = ()
 _C.DATASETS.VAL = ()
 # List of the dataset names for testing, as present in paths_catalog.py
 _C.DATASETS.TEST = ()
+_C.DATASETS.TO_TEST = None
 
 # -----------------------------------------------------------------------------
 # DataLoader

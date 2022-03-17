@@ -3,6 +3,7 @@
 Most of the requirements of this projects are exactly the same as [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark). If you have any problem of your environment, you should check their [issues page](https://github.com/facebookresearch/maskrcnn-benchmark/issues) first. Hope you will find the answer.
 
 ### Requirements:
+- Python <= 3.8
 - PyTorch >= 1.2 (Mine 1.4.0 (CUDA 10.1))
 - torchvision >= 0.4 (Mine 0.5.0 (CUDA 10.1))
 - cocoapi
@@ -46,7 +47,13 @@ python setup.py build_ext install
 cd $INSTALL_DIR
 git clone https://github.com/NVIDIA/apex.git
 cd apex
+
+# WARNING if you use older Versions of Pytorch (anything below 1.7), you will need a hard reset,
+# as the newer version of apex does require newer pytorch versions. Ignore the hard reset otherwise.
+git reset --hard 3fe10b5597ba14a748ebb271a6ab97c09c5701ac
+
 python setup.py install --cuda_ext --cpp_ext
+
 
 # install PyTorch Detection
 cd $INSTALL_DIR

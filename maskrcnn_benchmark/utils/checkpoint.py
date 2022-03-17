@@ -25,6 +25,7 @@ class Checkpointer(object):
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.save_dir = save_dir
+        print("INIT SAVE DIR", self.save_dir)
         self.save_to_disk = save_to_disk
         if logger is None:
             logger = logging.getLogger(__name__)
@@ -82,6 +83,7 @@ class Checkpointer(object):
 
     def get_checkpoint_file(self):
         save_file = os.path.join(self.save_dir, "last_checkpoint")
+        print("get_checkpoint_file", save_file)
         try:
             with open(save_file, "r") as f:
                 last_saved = f.read()
@@ -90,6 +92,7 @@ class Checkpointer(object):
             # if file doesn't exist, maybe because it has just been
             # deleted by a separate process
             last_saved = ""
+        print("last_saved", last_saved)
         return last_saved
 
     def tag_last_checkpoint(self, last_filename):
