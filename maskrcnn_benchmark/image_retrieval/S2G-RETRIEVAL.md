@@ -6,7 +6,7 @@ Warning -  this part of code is less organized.
 
 Pre-requisite:  ```vg_data, vg_dict, vg_info``` should have already downloaded if you followed DATASET.md.
 
-You will also need a pre-trained SGDet model, for example from [here](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21781947&authkey=AF_EM-rkbMyT3gs). This is the SGDet model that is beeing described in the main `README.md`
+You will also need a pre-trained SGDet model, for example from [here](https://1drv.ms/u/s!AmRLLNf6bzcir9x7OYb6sKBlzoXuYA?e=wrcWEh). This is the SGDet model that is beeing described in the main `README.md`
 
 Download the ground-truth captions and generated sentence graphs from [here](https://1drv.ms/u/s!AmRLLNf6bzcir81fZzrcudYj5mG27A?e=1kuaRx).
 
