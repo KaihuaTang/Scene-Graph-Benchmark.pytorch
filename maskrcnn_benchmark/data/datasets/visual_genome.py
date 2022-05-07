@@ -124,6 +124,7 @@ class VGDataset(torch.utils.data.Dataset):
         if os.path.isfile(path):
             file_list = json.load(open(path))
             for file in tqdm(file_list):
+                self.custom_files.append(file)
                 img = Image.open(file).convert("RGB")
                 self.img_info.append({'width': int(img.width), 'height': int(img.height)})
 
