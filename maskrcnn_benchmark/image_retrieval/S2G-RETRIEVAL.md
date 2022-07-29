@@ -72,6 +72,8 @@ Sentence-to-Graph Retrieval (S2G) results are given in the paper [Unbiased Scene
 
 ![alt text](../../demo/TDE_Results3.png "from 'Unbiased Scene Graph Generation from Biased Training'")
 
+You can achieve even better results, if you train your model for 9 epochs instead of 30 as recommended in the original publication.
+
 ## Acknowledgement
 
 Since I lost part of the code when I merged several jupyter notes into the preprocessing.py files, the "image_graph" and "text_graph" are missing in the original txt_img_sg dictionary. Thanks to the [Haeyong Kang](https://scholar.google.com/citations?user=v_tUj4oAAAAJ&hl=ko) from KAIST, he filled in the missing part of preprocessing.py.
