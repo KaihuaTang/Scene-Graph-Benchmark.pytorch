@@ -53,7 +53,8 @@ def do_vg_evaluation(
         gt = dataset.get_groundtruth(image_id, evaluation=True)
         groundtruths.append(gt)
 
-    save_output(output_folder, groundtruths, predictions, dataset)
+    # comment out to save output
+    # save_output(output_folder, groundtruths, predictions, dataset)
     
     result_str = '\n' + '=' * 100 + '\n'
     if "bbox" in iou_types:

@@ -3,7 +3,7 @@ import sys
 import torch
 import h5py
 import json
-from PIL import Image
+from PIL import Image, ImageFile
 import numpy as np
 from collections import defaultdict
 from tqdm import tqdm
@@ -13,6 +13,7 @@ from maskrcnn_benchmark.structures.bounding_box import BoxList
 from maskrcnn_benchmark.structures.boxlist_ops import boxlist_iou
 
 BOX_SCALE = 1024  # Scale at which we have the boxes
+ImageFile.LOAD_TRUNCATED_IMAGES = True # handle PIL "IOError: image file truncated" https://stackoverflow.com/questions/12984426/python-pil-ioerror-image-file-truncated-with-big-images
 
 class VGDataset(torch.utils.data.Dataset):
 

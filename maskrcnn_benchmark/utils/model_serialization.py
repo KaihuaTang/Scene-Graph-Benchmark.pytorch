@@ -25,6 +25,10 @@ def align_and_update_state_dicts(model_state_dict, loaded_state_dict, load_mappi
     logger = logging.getLogger(__name__)
     current_keys = sorted(list(model_state_dict.keys()))
     loaded_keys = sorted(list(loaded_state_dict.keys()))
+
+    logger.info("Type of current keys: {}".format(type(current_keys)))
+    logger.info("CURRENT KEYS: {}".format(current_keys))
+
     # get a matrix of string matches, where each (i, j) entry correspond to the size of the
     # loaded_key string, if it matches
     # NOTE: Kaihua Tang, since some modules of current model will be initialized from assigned layer of 
