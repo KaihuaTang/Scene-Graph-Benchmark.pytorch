@@ -14,6 +14,7 @@ import datetime
 
 import torch
 from torch.nn.utils import clip_grad_norm_
+from torch.cuda.amp import autocast, GradScaler
 
 from maskrcnn_benchmark.config import cfg
 from maskrcnn_benchmark.data import make_data_loader
@@ -34,10 +35,10 @@ from maskrcnn_benchmark.utils.metric_logger import MetricLogger
 
 # See if we can use apex.DistributedDataParallel instead of the torch default,
 # and enable mixed-precision via apex.amp
-try:
-    from apex import amp
-except ImportError:
-    raise ImportError('Use APEX for multi-precision via apex.amp')
+# try:
+#     from apex import amp
+# except ImportError:
+#     raise ImportError('Use APEX for multi-precision via apex.amp')
 
 
 def train(cfg, local_rank, distributed, logger):
@@ -76,8 +77,15 @@ def train(cfg, local_rank, distributed, logger):
     debug_print(logger, 'end optimizer and shcedule')
     # Initialize mixed-precision training
     use_mixed_precision = cfg.DTYPE == "float16"
-    amp_opt_level = 'O1' if use_mixed_precision else 'O0'
-    model, optimizer = amp.initialize(model, optimizer, opt_level=amp_opt_level)
+
+    # apex.amp
+    # amp_opt_level = 'O1' if use_mixed_precision else 'O0'
+    # model, optimizer = amp.initialize(model, optimizer, opt_level=amp_opt_level)
+
+    # pytorch native amp
+    if use_mixed_precision:
+        scaler = GradScaler()
+        debug_print(logger, '='*10 + 'using pytorch native amp' + '='*10)
 
     if distributed:
         model = torch.nn.parallel.DistributedDataParallel(
@@ -144,9 +152,13 @@ def train(cfg, local_rank, distributed, logger):
         images = images.to(device)
         targets = [target.to(device) for target in targets]
 
-        loss_dict = model(images, targets)
-
-        losses = sum(loss for loss in loss_dict.values())
+        if use_mixed_precision:
+            with autocast():
+                loss_dict = model(images, targets)
+                losses = sum(loss for loss in loss_dict.values())
+        else:
+            loss_dict = model(images, targets)
+            losses = sum(loss for loss in loss_dict.values())
 
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = reduce_loss_dict(loss_dict)
@@ -154,17 +166,26 @@ def train(cfg, local_rank, distributed, logger):
         meters.update(loss=losses_reduced, **loss_dict_reduced)
 
         optimizer.zero_grad()
-        # Note: If mixed precision is not used, this ends up doing nothing
-        # Otherwise apply loss scaling for mixed-precision recipe
-        with amp.scale_loss(losses, optimizer) as scaled_losses:
-            scaled_losses.backward()
+        # # Note: If mixed precision is not used, this ends up doing nothing
+        # # Otherwise apply loss scaling for mixed-precision recipe
+        # with amp.scale_loss(losses, optimizer) as scaled_losses:
+        #     scaled_losses.backward()
+        if use_mixed_precision:
+            scaler.scale(losses).backward()
+            scaler.unscale_(optimizer)
+        else:
+            losses.backward()
         
         # add clip_grad_norm from MOTIFS, tracking gradient, used for debug
         verbose = (iteration % cfg.SOLVER.PRINT_GRAD_FREQ) == 0 or print_first_grad # print grad or not
         print_first_grad = False
         clip_grad_norm([(n, p) for n, p in model.named_parameters() if p.requires_grad], max_norm=cfg.SOLVER.GRAD_NORM_CLIP, logger=logger, verbose=verbose, clip=True)
 
-        optimizer.step()
+        if use_mixed_precision:
+            scaler.step(optimizer)
+            scaler.update()
+        else:
+            optimizer.step()
 
         batch_time = time.time() - end
         end = time.time()
