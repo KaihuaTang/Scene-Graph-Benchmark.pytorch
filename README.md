@@ -6,6 +6,9 @@
 
 Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) has been accepted by CVPR 2020 (Oral).
 
+**If my open source projects have inspired you, giving me some sponsorship will be a great help to my subsequent open source work.** 
+[Support my subsequent open source work❤️🙏](https://kaihuatang.github.io/donate.html)
+
 ## Recent Updates
 
 - [x] 2020.06.23 Add no graph constraint mean Recall@K (ng-mR@K) and no graph constraint Zero-Shot Recall@K (ng-zR@K) [\[link\]](METRICS.md#explanation-of-our-metrics)
