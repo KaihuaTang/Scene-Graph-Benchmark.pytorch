@@ -74,11 +74,12 @@ After you download the [Faster R-CNN model](https://1drv.ms/u/s!AmRLLNf6bzcir8xe
 The above pretrained Faster R-CNN model achives 38.52/26.35/28.14 mAp on VG train/val/test set respectively.
 
 ## Alternate links
+Thanks for sponsorship from [Catchip](https://github.com/Catchip). Since OneDrive links might be broken in mainland China, we also provide the following alternate links for all the pretrained models and dataset annotations: 
 
-Since OneDrive links might be broken in mainland China, we also provide the following alternate links for all the pretrained models and dataset annotations using BaiduNetDisk: 
-
-Link：[https://pan.baidu.com/s/1oyPQBDHXMQ5Tsl0jy5OzgA](https://pan.baidu.com/s/1oyPQBDHXMQ5Tsl0jy5OzgA)
+Link1(Baidu)：[https://pan.baidu.com/s/1oyPQBDHXMQ5Tsl0jy5OzgA](https://pan.baidu.com/s/1oyPQBDHXMQ5Tsl0jy5OzgA)
 Extraction code：1234
+
+Link2(Weiyun): [https://share.weiyun.com/ViTWrFxG](https://share.weiyun.com/ViTWrFxG)
 
 ## Faster R-CNN pre-training
 The following command can be used to train your own Faster R-CNN model:
