@@ -6,8 +6,7 @@
 
 Our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949) has been accepted by CVPR 2020 (Oral).
 
-**If my open source projects have inspired you, giving me some sponsorship will be a great help to my subsequent open source work.** 
-[Support my subsequent open source work❤️🙏](https://kaihuatang.github.io/donate.html)
+[Support my open source work](https://kaihuatang.github.io/donate.html)
 
 ## Recent Updates
 
