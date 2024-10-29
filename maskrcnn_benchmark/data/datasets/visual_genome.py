@@ -157,10 +157,10 @@ class VGDataset(torch.utils.data.Dataset):
             # Filter out dupes!
             assert self.split == 'train'
             old_size = relation.shape[0]
-            all_rel_sets = defaultdict(list)
+            all_rel_sets = defaultdict(set)
             for (o0, o1, r) in relation:
-                all_rel_sets[(o0, o1)].append(r)
-            relation = [(k[0], k[1], np.random.choice(v)) for k,v in all_rel_sets.items()]
+                all_rel_sets[(o0, o1)].add(r)
+            relation = [(k[0], k[1], v) for k, vs in all_rel_sets.items() for v in vs]
             relation = np.array(relation, dtype=np.int32)
         
         # add relation to target
